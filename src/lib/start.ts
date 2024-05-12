@@ -33,7 +33,6 @@ const isInteractive = process.stdout.isTTY;
 
 const openBrowser = require('react-dev-utils/openBrowser');
 
-
 const { webpackConfig, devServer } = require('../webpack.config');
 const compiler = webpack(webpackConfig as Configuration);
 compiler.hooks.invalid.tap('invalid', () => {

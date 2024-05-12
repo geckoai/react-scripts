@@ -35,6 +35,7 @@ const eslint_webpack_plugin_1 = __importDefault(require("eslint-webpack-plugin")
 const css_minimizer_webpack_plugin_1 = __importDefault(require("css-minimizer-webpack-plugin"));
 const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
 const webpack_manifest_plugin_1 = require("webpack-manifest-plugin");
+const node_polyfill_webpack_plugin_1 = __importDefault(require("node-polyfill-webpack-plugin"));
 const react_refresh_webpack_plugin_1 = __importDefault(require("@pmmmwh/react-refresh-webpack-plugin"));
 const postcss_normalize_1 = __importDefault(require("postcss-normalize"));
 const webpack_merge_1 = require("webpack-merge");
@@ -200,6 +201,9 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     if (config.eslint) {
         eslintOptions = Object.assign(eslintOptions, config.eslint);
     }
+    else {
+        eslintOptions = null;
+    }
     if (config.styleLint) {
         stylelintOptions = Object.assign(stylelintOptions, config.styleLint);
     }
@@ -248,7 +252,7 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
 };
 const plugins = [
     new webpack_1.AutomaticPrefetchPlugin(),
-    new eslint_webpack_plugin_1.default(eslintOptions),
+    new node_polyfill_webpack_plugin_1.default(),
     new webpack_1.EnvironmentPlugin([
         'NODE_ENV',
         'PUBLIC_URL',
@@ -308,6 +312,9 @@ const plugins = [
         },
     }),
 ];
+if (eslintOptions) {
+    plugins.push(new eslint_webpack_plugin_1.default(eslintOptions));
+}
 if (stylelintOptions) {
     plugins.push(new stylelint_webpack_plugin_1.default(stylelintOptions));
 }
@@ -474,8 +481,7 @@ const configuration = {
     },
     cache: {
         type: 'filesystem',
-        compression: false,
-        store: 'pack',
+        cacheDirectory: path_1.default.resolve('node_modules', '.cache', 'webpack'),
     },
     output: {
         publicPath: process.env.PUBLIC_URL,

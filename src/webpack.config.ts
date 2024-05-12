@@ -37,6 +37,7 @@ import ESLintWebpackPlugin from 'eslint-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
+import NodePolyfillWebpackPlugin from 'node-polyfill-webpack-plugin';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import postcssNormalize from 'postcss-normalize';
 import { merge } from 'webpack-merge';
@@ -139,7 +140,7 @@ const miniCssExtractPluginOptions = {
 };
 let fileLoaderOptions = {};
 let stylelintOptions = null;
-let eslintOptions = {
+let eslintOptions: any = {
   extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
   formatter: require.resolve('react-dev-utils/eslintFormatter'),
   cache: true,
@@ -219,6 +220,8 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
 
   if (config.eslint) {
     eslintOptions = Object.assign(eslintOptions, config.eslint);
+  } else {
+    eslintOptions = null;
   }
 
   if (config.styleLint) {
@@ -274,7 +277,7 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
 
 const plugins: WebpackPluginInstance[] = [
   new AutomaticPrefetchPlugin(),
-  new ESLintWebpackPlugin(eslintOptions),
+  new NodePolyfillWebpackPlugin(),
   new EnvironmentPlugin([
     'NODE_ENV',
     'PUBLIC_URL',
@@ -334,6 +337,10 @@ const plugins: WebpackPluginInstance[] = [
     },
   }),
 ];
+
+if (eslintOptions) {
+  plugins.push(new ESLintWebpackPlugin(eslintOptions));
+}
 
 if (stylelintOptions) {
   plugins.push(new StylelintWebpackPlugin(stylelintOptions));
@@ -508,8 +515,7 @@ const configuration: Configuration = {
   },
   cache: {
     type: 'filesystem',
-    compression: false,
-    store: 'pack',
+    cacheDirectory: path.resolve('node_modules', '.cache', 'webpack'),
   },
   output: {
     publicPath: process.env.PUBLIC_URL,
