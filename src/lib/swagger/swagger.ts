@@ -2,7 +2,7 @@ import { SwaggerGenerator } from './swagger-generator';
 import axios from 'axios';
 import { transformer } from '../../utils';
 import { OpenApi } from './open-api';
-import { Typed, TypedArray } from '@quick-toolkit/class-transformer';
+import { Typed, TypedArray } from '@geckoai/class-transformer';
 
 /**
  * Swagger

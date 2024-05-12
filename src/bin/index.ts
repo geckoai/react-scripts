@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * MIT License
- * Copyright (c) 2021 RanYunLong<549510622@qq.com> @quick-toolkit/react-scripts
+ * Copyright (c) 2021 RanYunLong<549510622@qq.com> @geckoai/react-scripts
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -28,13 +28,14 @@ import { program } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
 import inquirer from 'inquirer';
-// @ts-ignore
 import download from 'download-git-repo';
 import rimraf from 'rimraf';
 import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
 import { swaggerGenerator } from '../lib/swagger-generator';
+import dotenv from 'dotenv';
+import { expand } from 'dotenv-expand';
 
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
 
@@ -45,7 +46,8 @@ program
   .description('Start react app')
   .option('-M, --max_old_space_size [size]', 'memory limit', '4096')
   .action((option: { max_old_space_size: string }) => {
-    require('dotenv').config();
+    expand(dotenv.config());
+
     setEnv(true);
     const size = Number(option.max_old_space_size);
     if (isNaN(size)) {
@@ -100,7 +102,7 @@ program
   .action((projectName: string) => {
     const spinner = ora('Start download template.');
     download(
-      'quick-toolkit/react-app-template',
+      'geckoai/react-app-template',
       path.resolve(projectName),
       async (err: Error) => {
         if (err) {

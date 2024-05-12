@@ -1,4 +1,4 @@
-import { Typed, TypedArray } from '@quick-toolkit/class-transformer';
+import { Typed, TypedArray } from '@geckoai/class-transformer';
 import { SwaggerGeneratorDto } from '../swagger-generator-dto';
 import { SwaggerGeneratorVo } from '../swagger-generator-vo';
 

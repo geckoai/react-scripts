@@ -1,4 +1,4 @@
-import { Typed } from '@quick-toolkit/class-transformer';
+import { Typed } from '@geckoai/class-transformer';
 /**
  * @class SwaggerGeneratorDto
  */

@@ -1,4 +1,4 @@
-import { Typed, TypedArray } from '@quick-toolkit/class-transformer';
+import { Typed, TypedArray } from '@geckoai/class-transformer';
 import { OpenApiPathMethodParameter } from '../open-api-path-method-parameter';
 import {
   Decorator,
@@ -80,9 +80,9 @@ export class OpenApiPathMethodInfo {
    * 初始化
    */
   public init(): void {
-    const members = this.importSource.get('@quick-toolkit/http') || new Set();
+    const members = this.importSource.get('@geckoai/http') || new Set();
     members.add('ApiRequest');
-    this.importSource.set('@quick-toolkit/http', members);
+    this.importSource.set('@geckoai/http', members);
   }
 
   /**
@@ -131,9 +131,9 @@ export class OpenApiPathMethodInfo {
     if (list.length) {
       if (this.parameters.length) {
         const members =
-          this.importSource.get('@quick-toolkit/http') || new Set();
+          this.importSource.get('@geckoai/http') || new Set();
         members.add('ApiProperty');
-        this.importSource.set('@quick-toolkit/http', members);
+        this.importSource.set('@geckoai/http', members);
       }
     }
     return list;

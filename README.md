@@ -3,20 +3,20 @@
 ### install
 
 ```shell
-npm i @quick-toolkit/react-scripts
+npm i @geckoai/react-scripts
 # or
-yarn add @quick-toolkit/react-scripts
+yarn add @geckoai/react-scripts
 ```
 
 ### create app
 
-1. Global install the package `@quick-toolkit/react-scripts`;
+1. Global install the package `@geckoai/react-scripts`;
 
 ```shell
 # mac/ubuntu
-sudo npm i -g @quick-toolkit/react-scripts
+sudo npm i -g @geckoai/react-scripts
 # windows
-npm i -g @quick-toolkit/react-scripts
+npm i -g @geckoai/react-scripts
 ```
 
 2. Create a app

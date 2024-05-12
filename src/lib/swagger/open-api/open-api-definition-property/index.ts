@@ -1,4 +1,4 @@
-import { Typed, TypedArray } from '@quick-toolkit/class-transformer';
+import { Typed, TypedArray } from '@geckoai/class-transformer';
 import { OpenApiItems } from '../open-api-items';
 import {
   Decorator,
@@ -49,9 +49,9 @@ export class OpenApiDefinitionProperty {
     info: OpenApiDefinition,
     output: SwaggerGenerator
   ): Decorator[] {
-    const members = info.importSource.get('@quick-toolkit/http') || new Set();
+    const members = info.importSource.get('@geckoai/http') || new Set();
     const transformers =
-      info.importSource.get('@quick-toolkit/class-transformer') || new Set();
+      info.importSource.get('@geckoai/class-transformer') || new Set();
     members.add('ApiProperty');
     if (
       this.type !== 'object' ||
@@ -205,8 +205,8 @@ export class OpenApiDefinitionProperty {
         }
       }
 
-      info.importSource.set('@quick-toolkit/http', members);
-      info.importSource.set('@quick-toolkit/class-transformer', transformers);
+      info.importSource.set('@geckoai/http', members);
+      info.importSource.set('@geckoai/class-transformer', transformers);
       return list;
     }
     transformers.add('Typed');

@@ -1,3 +1,3 @@
-import { ClassTransformer } from '@quick-toolkit/class-transformer';
+import { ClassTransformer } from '@geckoai/class-transformer';
 
 export const transformer = new ClassTransformer();

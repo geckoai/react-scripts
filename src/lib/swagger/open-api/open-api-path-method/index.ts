@@ -1,4 +1,4 @@
-import { Typed } from '@quick-toolkit/class-transformer';
+import { Typed } from '@geckoai/class-transformer';
 import { OpenApiPathMethodInfo } from '../open-api-path-method-info';
 /**
  * OpenAPI info docs

@@ -1,4 +1,4 @@
-import { Typed, TypedArray } from '@quick-toolkit/class-transformer';
+import { Typed, TypedArray } from '@geckoai/class-transformer';
 import { OpenApiItems } from '../open-api-items';
 import {
   Decorator,
@@ -73,7 +73,7 @@ export class OpenApiPathMethodParameter {
   public createDecorators(info: OpenApiPathMethodInfo): Decorator[] {
     const assignmenets: PropertyAssignment[] = [];
     const members =
-      info.importSource.get('@quick-toolkit/class-transformer') || new Set();
+      info.importSource.get('@geckoai/class-transformer') || new Set();
 
     if (this.format) {
       assignmenets.push(
@@ -242,7 +242,7 @@ export class OpenApiPathMethodParameter {
         )
       );
     }
-    info.importSource.set('@quick-toolkit/class-transformer', members);
+    info.importSource.set('@geckoai/class-transformer', members);
     return list;
   }
 

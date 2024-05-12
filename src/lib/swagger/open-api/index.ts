@@ -1,4 +1,4 @@
-import { Typed, TypedMap } from '@quick-toolkit/class-transformer';
+import { Typed, TypedMap } from '@geckoai/class-transformer';
 import { OpenApiInfo } from './open-api-info';
 import { OpenApiPathMethod } from './open-api-path-method';
 import { OpenApiDefinition } from './open-api-definition';

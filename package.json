@@ -1,6 +1,6 @@
 {
-  "name": "@quick-toolkit/react-scripts",
-  "version": "1.0.17-beta2",
+  "name": "@geckoai/react-scripts",
+  "version": "1.0.0",
   "description": "react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -17,18 +17,18 @@
     "bin:generator": "ts-node ./src/bin/index.ts swagger-generator"
   },
   "keywords": [
-    "@quick-toolkit/react-scripts",
-    "quick-toolkit",
+    "@geckoai/react-scripts",
+    "geckoai",
     "react-scripts"
   ],
   "author": "YunlongRan<549510622@qq.com>",
   "bugs": {
-    "url": "https://github.com/@quick-toolkit/react-scripts/issues"
+    "url": "https://github.com/@geckoai/react-scripts/issues"
   },
-  "homepage": "https://github.com/@quick-toolkit/react-scriptsr#readme",
+  "homepage": "https://github.com/@geckoai/react-scriptsr#readme",
   "license": "MIT",
   "devDependencies": {
-    "@quick-toolkit/http": "^1.0.2",
+    "@geckoai/http": "^1.0.0",
     "@types/inquirer": "^8.2.0",
     "@types/ip": "^1.1.0",
     "@types/postcss-preset-env": "^6.7.3",
@@ -44,8 +44,8 @@
   },
   "dependencies": {
     "@babel/runtime-corejs2": "^7.18.9",
+    "@geckoai/class-transformer": "^1.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
-    "@quick-toolkit/class-transformer": "^1.0.1",
     "@types/node": "^17.0.23",
     "@types/webpack-dev-server": "4.5.1",
     "@typescript-eslint/eslint-plugin": "5.16.0",
@@ -62,6 +62,7 @@
     "css-loader": "^5.2.7",
     "css-minimizer-webpack-plugin": "^3.4.1",
     "dotenv": "^16.0.0",
+    "dotenv-expand": "^11.0.6",
     "download-git-repo": "^3.0.2",
     "eslint": "8.15.0",
     "eslint-config-prettier": "8.5.0",
@@ -94,7 +95,7 @@
     "typescript": "4.6.4",
     "url": "^0.11.0",
     "url-loader": "^4.1.1",
-    "webpack": "5.72.1",
+    "webpack": "^5.72.1",
     "webpack-dev-server": "^4.9.0",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^5.8.0"
