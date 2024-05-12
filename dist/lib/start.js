@@ -34,7 +34,7 @@ const constants_1 = require("./constants");
 const copy_1 = require("./copy");
 const isInteractive = process.stdout.isTTY;
 const openBrowser = require('react-dev-utils/openBrowser');
-const { webpackConfig, devServer } = require('../webpack.config');
+const { webpackConfig, ServerConfiguration } = require('../webpack.config');
 const compiler = (0, webpack_1.webpack)(webpackConfig);
 compiler.hooks.invalid.tap('invalid', () => {
     if (isInteractive) {
@@ -59,7 +59,7 @@ if (webpackConfig) {
         }
     }
 }
-const server = new webpack_dev_server_1.default(devServer, compiler);
+const server = new webpack_dev_server_1.default(ServerConfiguration, compiler);
 const port = server.options.port || 3000;
 server.options.open = false;
 const protocol = (server.options.server || { type: 'http' }).type || 'http';

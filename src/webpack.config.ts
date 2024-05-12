@@ -37,14 +37,13 @@ import ESLintWebpackPlugin from 'eslint-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
-import NodePolyfillWebpackPlugin from 'node-polyfill-webpack-plugin';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import postcssNormalize from 'postcss-normalize';
 import { merge } from 'webpack-merge';
 import path from 'path';
 import fs from 'fs';
 import ignoredFiles from './ignoredFiles';
-import Server from 'webpack-dev-server';
+import WebpackDevServer from 'webpack-dev-server';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -156,7 +155,10 @@ let eslintOptions: any = {
 
 let customWebpackConfig: any;
 
-let devServerOptions: Server.Configuration = {
+let devServerOptions: WebpackDevServer.Configuration = {
+  devMiddleware: {
+    writeToDisk: true,
+  },
   static: {
     directory: path.resolve('public'),
     publicPath: [process.env.PUBLIC_URL || ''],
@@ -167,10 +169,7 @@ let devServerOptions: Server.Configuration = {
   client: {
     logging: 'none',
     progress: true,
-    overlay: {
-      errors: true,
-      warnings: false,
-    },
+    overlay: false,
   },
   port: 3000,
   hot: true,
@@ -265,6 +264,7 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
 
   return isProduction
     ? [
+        'thread-loader',
         {
           loader: MiniCssExtractPlugin.loader,
           options: miniCssExtractPluginOptions,
@@ -272,12 +272,11 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
         cssLoader,
         postCssLoader,
       ]
-    : ['style-loader', cssLoader];
+    : ['thread-loader', 'style-loader', cssLoader];
 };
 
 const plugins: WebpackPluginInstance[] = [
   new AutomaticPrefetchPlugin(),
-  new NodePolyfillWebpackPlugin(),
   new EnvironmentPlugin([
     'NODE_ENV',
     'PUBLIC_URL',
@@ -439,72 +438,83 @@ const configuration: Configuration = {
       },
       {
         test: /\.(png|jpe?g|gif|svg|bmp|webp)(\?.*)?$/,
-        use: isProduction
-          ? {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/images/[name].[contenthash:8].[ext]',
-                limit: 10000,
-                esModule: false,
-                ...fileLoaderOptions,
+        use: [
+          isProduction
+            ? {
+                loader: 'file-loader',
+                options: {
+                  name: 'assets/images/[name].[contenthash:8].[ext]',
+                  limit: 10000,
+                  esModule: false,
+                  ...fileLoaderOptions,
+                },
+              }
+            : {
+                loader: 'url-loader',
+                options: {
+                  esModule: false,
+                  limit: 8192,
+                },
               },
-            }
-          : {
-              loader: 'url-loader',
-              options: {
-                esModule: false,
-              },
-            },
+        ],
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        use: isProduction
-          ? {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/medias/[name].[contenthash:8].[ext]',
-                limit: 10000,
-                esModule: false,
-                ...fileLoaderOptions,
+        use: [
+          isProduction
+            ? {
+                loader: 'file-loader',
+                options: {
+                  name: 'assets/medias/[name].[contenthash:8].[ext]',
+                  limit: 10000,
+                  esModule: false,
+                  ...fileLoaderOptions,
+                },
+              }
+            : {
+                loader: 'url-loader',
+                options: {
+                  esModule: false,
+                },
               },
-            }
-          : {
-              loader: 'url-loader',
-              options: {
-                esModule: false,
-              },
-            },
+        ],
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        use: isProduction
-          ? {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                limit: 10000,
-                esModule: false,
-                ...fileLoaderOptions,
+        use: [
+          isProduction
+            ? {
+                loader: 'file-loader',
+                options: {
+                  name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                  limit: 10000,
+                  esModule: false,
+                  ...fileLoaderOptions,
+                },
+              }
+            : {
+                loader: 'url-loader',
+                options: {
+                  esModule: false,
+                },
               },
-            }
-          : {
-              loader: 'url-loader',
-              options: {
-                esModule: false,
-              },
-            },
+        ],
       },
       {
         test: /\.m?jsx?$/,
         exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader',
-          options: babelLoaderOptions,
-        },
+        use: [
+          'thread-loader',
+          {
+            loader: 'babel-loader',
+            options: babelLoaderOptions,
+          },
+        ],
       },
       {
         test: /\.tsx?$/,
         use: [
+          'thread-loader',
           {
             loader: 'babel-loader',
             options: babelLoaderOptions,
@@ -515,7 +525,11 @@ const configuration: Configuration = {
   },
   cache: {
     type: 'filesystem',
-    cacheDirectory: path.resolve('node_modules', '.cache', 'webpack'),
+    store: 'pack',
+    buildDependencies: {
+      config: [__filename],
+    },
+    //cacheDirectory: path.resolve('node_modules', '.cache', 'webpack'),
   },
   output: {
     publicPath: process.env.PUBLIC_URL,
@@ -555,7 +569,7 @@ const configuration: Configuration = {
   mode: isProduction ? 'production' : 'development',
 };
 
-export const devServer = devServerOptions;
+export const ServerConfiguration = devServerOptions;
 
 export const webpackConfig: Configuration = customWebpackConfig
   ? merge(configuration, customWebpackConfig)

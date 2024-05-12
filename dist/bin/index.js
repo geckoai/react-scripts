@@ -61,8 +61,8 @@ commander_1.program
     }
     rimraf_1.default.sync(path_1.default.resolve('node_modules', '.cache'));
     (0, child_process_1.spawn)('node', [
-        path_1.default.join(__dirname, '../', 'lib', 'start.js'),
         `--max_old_space_size=${size}`,
+        path_1.default.join(__dirname, '../', 'lib', 'start.js'),
     ], {
         stdio: 'inherit',
     });

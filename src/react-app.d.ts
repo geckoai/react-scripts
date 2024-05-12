@@ -2,6 +2,18 @@
 /// <reference types="@types/react" />
 /// <reference types="@types/react-dom" />
 
+declare module 'friendly-errors-webpack-plugin' {
+  import { WebpackPluginInstance } from 'webpack';
+
+  interface FriendlyErrorsWebpackPluginConst {
+    new (...args: any[]): WebpackPluginInstance;
+  }
+
+  let FriendlyErrorsWebpackPlugin: FriendlyErrorsWebpackPluginConst;
+
+  export default FriendlyErrorsWebpackPlugin;
+}
+
 declare global {
   declare namespace NodeJS {
     interface ProcessEnv {

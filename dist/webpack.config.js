@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.webpackConfig = exports.devServer = void 0;
+exports.webpackConfig = exports.ServerConfiguration = void 0;
 const webpack_1 = require("webpack");
 const fork_ts_checker_webpack_plugin_1 = __importDefault(require("fork-ts-checker-webpack-plugin"));
 const html_webpack_plugin_1 = __importDefault(require("html-webpack-plugin"));
@@ -35,7 +35,6 @@ const eslint_webpack_plugin_1 = __importDefault(require("eslint-webpack-plugin")
 const css_minimizer_webpack_plugin_1 = __importDefault(require("css-minimizer-webpack-plugin"));
 const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
 const webpack_manifest_plugin_1 = require("webpack-manifest-plugin");
-const node_polyfill_webpack_plugin_1 = __importDefault(require("node-polyfill-webpack-plugin"));
 const react_refresh_webpack_plugin_1 = __importDefault(require("@pmmmwh/react-refresh-webpack-plugin"));
 const postcss_normalize_1 = __importDefault(require("postcss-normalize"));
 const webpack_merge_1 = require("webpack-merge");
@@ -142,6 +141,9 @@ let eslintOptions = {
 };
 let customWebpackConfig;
 let devServerOptions = {
+    devMiddleware: {
+        writeToDisk: true,
+    },
     static: {
         directory: path_1.default.resolve('public'),
         publicPath: [process.env.PUBLIC_URL || ''],
@@ -152,10 +154,7 @@ let devServerOptions = {
     client: {
         logging: 'none',
         progress: true,
-        overlay: {
-            errors: true,
-            warnings: false,
-        },
+        overlay: false,
     },
     port: 3000,
     hot: true,
@@ -241,6 +240,7 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
     }
     return isProduction
         ? [
+            'thread-loader',
             {
                 loader: mini_css_extract_plugin_1.default.loader,
                 options: miniCssExtractPluginOptions,
@@ -248,11 +248,10 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
             cssLoader,
             postCssLoader,
         ]
-        : ['style-loader', cssLoader];
+        : ['thread-loader', 'style-loader', cssLoader];
 };
 const plugins = [
     new webpack_1.AutomaticPrefetchPlugin(),
-    new node_polyfill_webpack_plugin_1.default(),
     new webpack_1.EnvironmentPlugin([
         'NODE_ENV',
         'PUBLIC_URL',
@@ -405,72 +404,83 @@ const configuration = {
             },
             {
                 test: /\.(png|jpe?g|gif|svg|bmp|webp)(\?.*)?$/,
-                use: isProduction
-                    ? {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'assets/images/[name].[contenthash:8].[ext]',
-                            limit: 10000,
-                            esModule: false,
-                            ...fileLoaderOptions,
+                use: [
+                    isProduction
+                        ? {
+                            loader: 'file-loader',
+                            options: {
+                                name: 'assets/images/[name].[contenthash:8].[ext]',
+                                limit: 10000,
+                                esModule: false,
+                                ...fileLoaderOptions,
+                            },
+                        }
+                        : {
+                            loader: 'url-loader',
+                            options: {
+                                esModule: false,
+                                limit: 8192,
+                            },
                         },
-                    }
-                    : {
-                        loader: 'url-loader',
-                        options: {
-                            esModule: false,
-                        },
-                    },
+                ],
             },
             {
                 test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                use: isProduction
-                    ? {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'assets/medias/[name].[contenthash:8].[ext]',
-                            limit: 10000,
-                            esModule: false,
-                            ...fileLoaderOptions,
+                use: [
+                    isProduction
+                        ? {
+                            loader: 'file-loader',
+                            options: {
+                                name: 'assets/medias/[name].[contenthash:8].[ext]',
+                                limit: 10000,
+                                esModule: false,
+                                ...fileLoaderOptions,
+                            },
+                        }
+                        : {
+                            loader: 'url-loader',
+                            options: {
+                                esModule: false,
+                            },
                         },
-                    }
-                    : {
-                        loader: 'url-loader',
-                        options: {
-                            esModule: false,
-                        },
-                    },
+                ],
             },
             {
                 test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                use: isProduction
-                    ? {
-                        loader: 'file-loader',
-                        options: {
-                            name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                            limit: 10000,
-                            esModule: false,
-                            ...fileLoaderOptions,
+                use: [
+                    isProduction
+                        ? {
+                            loader: 'file-loader',
+                            options: {
+                                name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                                limit: 10000,
+                                esModule: false,
+                                ...fileLoaderOptions,
+                            },
+                        }
+                        : {
+                            loader: 'url-loader',
+                            options: {
+                                esModule: false,
+                            },
                         },
-                    }
-                    : {
-                        loader: 'url-loader',
-                        options: {
-                            esModule: false,
-                        },
-                    },
+                ],
             },
             {
                 test: /\.m?jsx?$/,
                 exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: babelLoaderOptions,
-                },
+                use: [
+                    'thread-loader',
+                    {
+                        loader: 'babel-loader',
+                        options: babelLoaderOptions,
+                    },
+                ],
             },
             {
                 test: /\.tsx?$/,
                 use: [
+                    'thread-loader',
                     {
                         loader: 'babel-loader',
                         options: babelLoaderOptions,
@@ -481,7 +491,11 @@ const configuration = {
     },
     cache: {
         type: 'filesystem',
-        cacheDirectory: path_1.default.resolve('node_modules', '.cache', 'webpack'),
+        store: 'pack',
+        buildDependencies: {
+            config: [__filename],
+        },
+        //cacheDirectory: path.resolve('node_modules', '.cache', 'webpack'),
     },
     output: {
         publicPath: process.env.PUBLIC_URL,
@@ -520,7 +534,7 @@ const configuration = {
     devtool: isProduction ? false : 'inline-source-map',
     mode: isProduction ? 'production' : 'development',
 };
-exports.devServer = devServerOptions;
+exports.ServerConfiguration = devServerOptions;
 exports.webpackConfig = customWebpackConfig
     ? (0, webpack_merge_1.merge)(configuration, customWebpackConfig)
     : configuration;

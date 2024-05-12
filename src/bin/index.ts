@@ -70,8 +70,8 @@ program
     spawn(
       'node',
       [
-        path.join(__dirname, '../', 'lib', 'start.js'),
         `--max_old_space_size=${size}`,
+        path.join(__dirname, '../', 'lib', 'start.js'),
       ],
       {
         stdio: 'inherit',

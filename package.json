@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/react-scripts",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -12,7 +12,7 @@
     "build:cjs": "tsc --project tsconfig.prod.cjs.json",
     "build:types": "tsc --project tsconfig.prod.types.json",
     "build:docs": "typedoc --options ./typedoc.json",
-    "release": "yarn build:cjs",
+    "release": "pnpm run build:cjs",
     "bin:build": "ts-node ./src/bin/index.ts build",
     "bin:generator": "ts-node ./src/bin/index.ts swagger-generator"
   },
@@ -55,7 +55,6 @@
     "babel-loader": "^8.2.4",
     "babel-plugin-named-asset-import": "^0.3.8",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
-    "node-polyfill-webpack-plugin": "^3.0.0",
     "babel-preset-react-app": "^10.0.1",
     "chalk": "^4.1.2",
     "commander": "^9.1.0",
@@ -83,7 +82,6 @@
     "postcss-loader": "^6.2.1",
     "postcss-normalize": "^10.0.1",
     "postcss-preset-env": "^7.5.0",
-    "process": "^0.11.10",
     "react-app-polyfill": "^3.0.0",
     "react-dev-utils": "^12.0.1",
     "react-refresh": "^0.13.0",
@@ -92,12 +90,13 @@
     "stylelint": "^14.6.1",
     "stylelint-webpack-plugin": "^3.2.0",
     "terser-webpack-plugin": "^5.3.1",
+    "thread-loader": "^4.0.2",
     "ts-loader": "^9.3.0",
     "typescript": "4.6.4",
     "url": "^0.11.0",
     "url-loader": "^4.1.1",
-    "webpack": "^5.72.1",
-    "webpack-dev-server": "^4.9.0",
+    "webpack": "5.72.1",
+    "webpack-dev-server": "^5.0.4",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^5.8.0"
   },
@@ -124,5 +123,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "packageManager": "pnpm@9.1.0"
 }

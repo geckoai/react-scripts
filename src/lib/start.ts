@@ -33,7 +33,7 @@ const isInteractive = process.stdout.isTTY;
 
 const openBrowser = require('react-dev-utils/openBrowser');
 
-const { webpackConfig, devServer } = require('../webpack.config');
+const { webpackConfig, ServerConfiguration } = require('../webpack.config');
 const compiler = webpack(webpackConfig as Configuration);
 compiler.hooks.invalid.tap('invalid', () => {
   if (isInteractive) {
@@ -59,7 +59,7 @@ if (webpackConfig) {
   }
 }
 
-const server = new Server(devServer as Server.Configuration, compiler);
+const server = new Server(ServerConfiguration, compiler);
 
 const port = server.options.port || 3000;
 server.options.open = false;
