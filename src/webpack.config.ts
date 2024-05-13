@@ -568,6 +568,7 @@ const configuration: Configuration = {
       ? [
           new CssMinimizerPlugin(),
           new TerserPlugin({
+            exclude: /\/npm/,
             parallel: true,
             terserOptions: {
               compress: {
