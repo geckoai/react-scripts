@@ -540,7 +540,7 @@ const configuration: Configuration = {
     idleTimeout: 60000,
     idleTimeoutAfterLargeChanges: 1000,
     idleTimeoutForInitialStore: 0,
-    profile: true,
+    // profile: true,
     compression: 'gzip',
     allowCollectingMemory: true,
     buildDependencies: {
@@ -568,7 +568,7 @@ const configuration: Configuration = {
       ? [
           new CssMinimizerPlugin(),
           new TerserPlugin({
-            exclude: /\/npm/,
+            exclude: [/\/npm/, /^npm/, /\/public/, /^public/],
             parallel: true,
             terserOptions: {
               compress: {

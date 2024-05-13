@@ -506,7 +506,7 @@ const configuration = {
         idleTimeout: 60000,
         idleTimeoutAfterLargeChanges: 1000,
         idleTimeoutForInitialStore: 0,
-        profile: true,
+        // profile: true,
         compression: 'gzip',
         allowCollectingMemory: true,
         buildDependencies: {
@@ -534,7 +534,7 @@ const configuration = {
             ? [
                 new css_minimizer_webpack_plugin_1.default(),
                 new terser_webpack_plugin_1.default({
-                    exclude: /\/npm/,
+                    exclude: [/\/npm/, /^npm/, /\/public/, /^public/],
                     parallel: true,
                     terserOptions: {
                         compress: {
