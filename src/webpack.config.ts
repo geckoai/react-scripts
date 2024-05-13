@@ -270,7 +270,6 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
   }
 
   return [
-    'thread-loader',
     isProduction
       ? {
           loader: MiniCssExtractPlugin.loader,
