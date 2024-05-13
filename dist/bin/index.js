@@ -33,7 +33,6 @@ const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const inquirer_1 = __importDefault(require("inquirer"));
 const download_git_repo_1 = __importDefault(require("download-git-repo"));
-const rimraf_1 = __importDefault(require("rimraf"));
 const build_1 = require("../lib/build");
 const set_env_1 = require("../lib/set-env");
 const install_1 = require("../lib/install");
@@ -76,8 +75,7 @@ commander_1.program
     .command('build')
     .description('Build react app')
     .action(() => {
-    rimraf_1.default.sync(path_1.default.resolve('node_modules', '.cache'));
-    require('dotenv').config();
+    (0, dotenv_expand_1.expand)(dotenv_1.default.config());
     (0, set_env_1.setEnv)();
     (0, build_1.build)();
 });

@@ -142,9 +142,6 @@ let eslintOptions = {
 };
 let customWebpackConfig;
 let devServerOptions = {
-    devMiddleware: {
-        writeToDisk: true,
-    },
     static: {
         directory: path_1.default.resolve('public'),
         publicPath: [process.env.PUBLIC_URL || ''],
@@ -503,12 +500,11 @@ const configuration = {
         type: 'filesystem',
         store: 'pack',
         maxAge: 60000,
+        compression: 'gzip',
         idleTimeout: 60000,
         idleTimeoutAfterLargeChanges: 1000,
         idleTimeoutForInitialStore: 0,
-        // profile: true,
-        compression: 'gzip',
-        allowCollectingMemory: true,
+        profile: true,
         buildDependencies: {
             config: [__filename],
         },

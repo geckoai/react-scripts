@@ -29,7 +29,6 @@ import chalk from 'chalk';
 import path from 'path';
 import inquirer from 'inquirer';
 import download from 'download-git-repo';
-import rimraf from 'rimraf';
 import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
@@ -89,8 +88,7 @@ program
   .command('build')
   .description('Build react app')
   .action(() => {
-    rimraf.sync(path.resolve('node_modules', '.cache'));
-    require('dotenv').config();
+    expand(dotenv.config());
     setEnv();
     build();
   });
