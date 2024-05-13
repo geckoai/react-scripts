@@ -66,7 +66,6 @@ program
       );
     }
 
-    rimraf.sync(path.resolve('node_modules', '.cache'));
     spawn(
       'node',
       [

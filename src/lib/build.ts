@@ -23,7 +23,6 @@
 import { Configuration, webpack } from 'webpack';
 import rimraf from 'rimraf';
 import path from 'path';
-import { webpackConfig } from '../webpack.config';
 import { DIST_DIR, PACKAGE_DIR } from './constants';
 import { copy } from './copy';
 

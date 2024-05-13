@@ -2,16 +2,14 @@
 /// <reference types="@types/react" />
 /// <reference types="@types/react-dom" />
 
-declare module 'friendly-errors-webpack-plugin' {
+declare module 'webpack-bundle-analyzer' {
   import { WebpackPluginInstance } from 'webpack';
 
-  interface FriendlyErrorsWebpackPluginConst {
+  interface BundleAnalyzerPluginConstructor {
     new (...args: any[]): WebpackPluginInstance;
   }
-
-  let FriendlyErrorsWebpackPlugin: FriendlyErrorsWebpackPluginConst;
-
-  export default FriendlyErrorsWebpackPlugin;
+  export let BundleAnalyzerPlugin: BundleAnalyzerPluginConstructor;
+  export default BundleAnalyzerPlugin;
 }
 
 declare global {

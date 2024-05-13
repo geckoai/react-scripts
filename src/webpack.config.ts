@@ -25,7 +25,7 @@ import {
   // WatchIgnorePlugin,
   WebpackPluginInstance,
   EnvironmentPlugin,
-  // IgnorePlugin,
+  IgnorePlugin,
   AutomaticPrefetchPlugin,
 } from 'webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
@@ -35,7 +35,6 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import StylelintWebpackPlugin from 'stylelint-webpack-plugin';
 import ESLintWebpackPlugin from 'eslint-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import postcssNormalize from 'postcss-normalize';
@@ -44,6 +43,7 @@ import path from 'path';
 import fs from 'fs';
 import ignoredFiles from './ignoredFiles';
 import WebpackDevServer from 'webpack-dev-server';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -188,6 +188,7 @@ let devServerOptions: WebpackDevServer.Configuration = {
   compress: true,
   open: false,
 };
+let bundleAnalyzerOptions: object | null = {};
 
 if (fs.existsSync(path.resolve('project.config.js'))) {
   const config: any = require(path.resolve('project.config.js'));
@@ -234,6 +235,12 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
   if (config.devServer) {
     devServerOptions = Object.assign(devServerOptions, config.devServer);
   }
+
+  if (config.bundleAnalyzer) {
+    bundleAnalyzerOptions = config.bundleAnalyzer;
+  } else {
+    bundleAnalyzerOptions = null;
+  }
 }
 
 /**
@@ -262,17 +269,17 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
       '[path][name]__[local]--[hash:base64:5]';
   }
 
-  return isProduction
-    ? [
-        'thread-loader',
-        {
+  return [
+    'thread-loader',
+    isProduction
+      ? {
           loader: MiniCssExtractPlugin.loader,
           options: miniCssExtractPluginOptions,
-        },
-        cssLoader,
-        postCssLoader,
-      ]
-    : ['thread-loader', 'style-loader', cssLoader];
+        }
+      : 'style-loader',
+    cssLoader,
+    postCssLoader,
+  ];
 };
 
 const plugins: WebpackPluginInstance[] = [
@@ -285,10 +292,10 @@ const plugins: WebpackPluginInstance[] = [
     'WDS_SOCKET_PORT',
     'WDS_SOCKET_PATH',
   ]),
-  // new IgnorePlugin({
-  //   resourceRegExp: /^\.\/locale$/,
-  //   contextRegExp: /moment$/,
-  // }),
+  new IgnorePlugin({
+    resourceRegExp: /^\.\/locale$/,
+    contextRegExp: /moment$/,
+  }),
   // new WatchIgnorePlugin({
   //   paths: [/\.js$/, /\.d\.ts$/],
   // }),
@@ -365,6 +372,9 @@ if (isProduction) {
       ignoreOrder: isProduction,
     })
   );
+  if (bundleAnalyzerOptions) {
+    plugins.push(new BundleAnalyzerPlugin(bundleAnalyzerOptions));
+  }
 } else {
   plugins.push(
     new ReactRefreshPlugin({
@@ -526,6 +536,13 @@ const configuration: Configuration = {
   cache: {
     type: 'filesystem',
     store: 'pack',
+    maxAge: 60000,
+    idleTimeout: 60000,
+    idleTimeoutAfterLargeChanges: 1000,
+    idleTimeoutForInitialStore: 0,
+    profile: true,
+    compression: 'gzip',
+    allowCollectingMemory: true,
     buildDependencies: {
       config: [__filename],
     },
@@ -547,9 +564,7 @@ const configuration: Configuration = {
   plugins,
   optimization: {
     minimize: isProduction,
-    minimizer: isProduction
-      ? [new CssMinimizerPlugin(), new TerserPlugin()]
-      : [],
+    minimizer: isProduction ? [new CssMinimizerPlugin()] : [],
     splitChunks: isProduction && {
       maxAsyncSize: 200000,
       maxInitialSize: 100000,

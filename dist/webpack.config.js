@@ -33,7 +33,6 @@ const copy_webpack_plugin_1 = __importDefault(require("copy-webpack-plugin"));
 const stylelint_webpack_plugin_1 = __importDefault(require("stylelint-webpack-plugin"));
 const eslint_webpack_plugin_1 = __importDefault(require("eslint-webpack-plugin"));
 const css_minimizer_webpack_plugin_1 = __importDefault(require("css-minimizer-webpack-plugin"));
-const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
 const webpack_manifest_plugin_1 = require("webpack-manifest-plugin");
 const react_refresh_webpack_plugin_1 = __importDefault(require("@pmmmwh/react-refresh-webpack-plugin"));
 const postcss_normalize_1 = __importDefault(require("postcss-normalize"));
@@ -41,6 +40,7 @@ const webpack_merge_1 = require("webpack-merge");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const ignoredFiles_1 = __importDefault(require("./ignoredFiles"));
+const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const isProduction = process.env.NODE_ENV === 'production';
 const webpackDevClientEntry = require.resolve('react-dev-utils/webpackHotDevClient');
 const reactRefreshOverlayEntry = require.resolve('react-dev-utils/refreshOverlayInterop');
@@ -171,6 +171,7 @@ let devServerOptions = {
     compress: true,
     open: false,
 };
+let bundleAnalyzerOptions = {};
 if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     const config = require(path_1.default.resolve('project.config.js'));
     if (config.webpack) {
@@ -212,6 +213,12 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     if (config.devServer) {
         devServerOptions = Object.assign(devServerOptions, config.devServer);
     }
+    if (config.bundleAnalyzer) {
+        bundleAnalyzerOptions = config.bundleAnalyzer;
+    }
+    else {
+        bundleAnalyzerOptions = null;
+    }
 }
 /**
  * 获取样式loaders
@@ -238,17 +245,17 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
         cssLoader.options.modules.localIdentName =
             '[path][name]__[local]--[hash:base64:5]';
     }
-    return isProduction
-        ? [
-            'thread-loader',
-            {
+    return [
+        'thread-loader',
+        isProduction
+            ? {
                 loader: mini_css_extract_plugin_1.default.loader,
                 options: miniCssExtractPluginOptions,
-            },
-            cssLoader,
-            postCssLoader,
-        ]
-        : ['thread-loader', 'style-loader', cssLoader];
+            }
+            : 'style-loader',
+        cssLoader,
+        postCssLoader,
+    ];
 };
 const plugins = [
     new webpack_1.AutomaticPrefetchPlugin(),
@@ -260,10 +267,10 @@ const plugins = [
         'WDS_SOCKET_PORT',
         'WDS_SOCKET_PATH',
     ]),
-    // new IgnorePlugin({
-    //   resourceRegExp: /^\.\/locale$/,
-    //   contextRegExp: /moment$/,
-    // }),
+    new webpack_1.IgnorePlugin({
+        resourceRegExp: /^\.\/locale$/,
+        contextRegExp: /moment$/,
+    }),
     // new WatchIgnorePlugin({
     //   paths: [/\.js$/, /\.d\.ts$/],
     // }),
@@ -333,6 +340,9 @@ if (isProduction) {
         filename: 'assets/styles/[name].[contenthash:8].css',
         ignoreOrder: isProduction,
     }));
+    if (bundleAnalyzerOptions) {
+        plugins.push(new webpack_bundle_analyzer_1.BundleAnalyzerPlugin(bundleAnalyzerOptions));
+    }
 }
 else {
     plugins.push(new react_refresh_webpack_plugin_1.default({
@@ -492,6 +502,13 @@ const configuration = {
     cache: {
         type: 'filesystem',
         store: 'pack',
+        maxAge: 60000,
+        idleTimeout: 60000,
+        idleTimeoutAfterLargeChanges: 1000,
+        idleTimeoutForInitialStore: 0,
+        profile: true,
+        compression: 'gzip',
+        allowCollectingMemory: true,
         buildDependencies: {
             config: [__filename],
         },
@@ -513,9 +530,7 @@ const configuration = {
     plugins,
     optimization: {
         minimize: isProduction,
-        minimizer: isProduction
-            ? [new css_minimizer_webpack_plugin_1.default(), new terser_webpack_plugin_1.default()]
-            : [],
+        minimizer: isProduction ? [new css_minimizer_webpack_plugin_1.default()] : [],
         splitChunks: isProduction && {
             maxAsyncSize: 200000,
             maxInitialSize: 100000,

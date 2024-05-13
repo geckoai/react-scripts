@@ -59,7 +59,6 @@ commander_1.program
     if (size % 1024 !== 0) {
         throw new TypeError('The option "max_old_space_size" argument must be multiple of 1024.');
     }
-    rimraf_1.default.sync(path_1.default.resolve('node_modules', '.cache'));
     (0, child_process_1.spawn)('node', [
         `--max_old_space_size=${size}`,
         path_1.default.join(__dirname, '../', 'lib', 'start.js'),

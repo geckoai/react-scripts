@@ -29,6 +29,7 @@ declare interface CustomConfig {
     scss?: {};
   };
   babel?: {};
+  bundleAnalyzer?: {};
   ts?: {};
   eslint?: {};
   styleLint?: {};
