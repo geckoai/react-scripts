@@ -44,6 +44,7 @@ import fs from 'fs';
 import ignoredFiles from './ignoredFiles';
 import WebpackDevServer from 'webpack-dev-server';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -563,7 +564,21 @@ const configuration: Configuration = {
   plugins,
   optimization: {
     minimize: isProduction,
-    minimizer: isProduction ? [new CssMinimizerPlugin()] : [],
+    minimizer: isProduction
+      ? [
+          new CssMinimizerPlugin(),
+          new TerserPlugin({
+            parallel: true,
+            terserOptions: {
+              compress: {
+                unused: true,
+                drop_console: true,
+                drop_debugger: true,
+              },
+            },
+          }),
+        ]
+      : [],
     splitChunks: isProduction && {
       maxAsyncSize: 200000,
       maxInitialSize: 100000,

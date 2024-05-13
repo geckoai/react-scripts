@@ -41,6 +41,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const ignoredFiles_1 = __importDefault(require("./ignoredFiles"));
 const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
+const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
 const isProduction = process.env.NODE_ENV === 'production';
 const webpackDevClientEntry = require.resolve('react-dev-utils/webpackHotDevClient');
 const reactRefreshOverlayEntry = require.resolve('react-dev-utils/refreshOverlayInterop');
@@ -246,7 +247,6 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
             '[path][name]__[local]--[hash:base64:5]';
     }
     return [
-        'thread-loader',
         isProduction
             ? {
                 loader: mini_css_extract_plugin_1.default.loader,
@@ -530,7 +530,21 @@ const configuration = {
     plugins,
     optimization: {
         minimize: isProduction,
-        minimizer: isProduction ? [new css_minimizer_webpack_plugin_1.default()] : [],
+        minimizer: isProduction
+            ? [
+                new css_minimizer_webpack_plugin_1.default(),
+                new terser_webpack_plugin_1.default({
+                    parallel: true,
+                    terserOptions: {
+                        compress: {
+                            unused: true,
+                            drop_console: true,
+                            drop_debugger: true,
+                        },
+                    },
+                }),
+            ]
+            : [],
         splitChunks: isProduction && {
             maxAsyncSize: 200000,
             maxInitialSize: 100000,
