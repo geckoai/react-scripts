@@ -534,6 +534,7 @@ const configuration = {
             ? [
                 new css_minimizer_webpack_plugin_1.default(),
                 new terser_webpack_plugin_1.default({
+                    exclude: /\/npm/,
                     parallel: true,
                     terserOptions: {
                         compress: {
