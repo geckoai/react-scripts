@@ -87,6 +87,17 @@ compiler.hooks.done.tap('done', (stats) => {
     }
 });
 server.startCallback(() => {
+    if (isInteractive) {
+        (0, clear_console_1.clearConsole)();
+    }
     console.log(chalk_1.default.cyan('Starting the development server...\n'));
     openBrowser(`${protocol}://localhost:${port}`);
+});
+process.on('SIGINT', function () {
+    server.stopCallback();
+    process.exit();
+});
+process.on('SIGTERM', function () {
+    server.stopCallback();
+    process.exit();
 });

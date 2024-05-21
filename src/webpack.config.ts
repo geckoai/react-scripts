@@ -24,7 +24,6 @@ import {
   Configuration,
   // WatchIgnorePlugin,
   WebpackPluginInstance,
-  EnvironmentPlugin,
   IgnorePlugin,
   AutomaticPrefetchPlugin,
 } from 'webpack';
@@ -58,6 +57,7 @@ const reactRefreshOverlayEntry = require.resolve(
 const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
+const DotEnv = require('dotenv-webpack');
 
 let babelLoaderOptions = {
   presets: [
@@ -173,7 +173,7 @@ let devServerOptions: WebpackDevServer.Configuration = {
   hot: true,
   historyApiFallback: {
     disableDotRule: true,
-    index: `${process.env.PUBLIC_URL || '/'}`,
+    index: process.env.PUBLIC_URL || '/',
   },
   setupMiddlewares: (middlewares, devServer) => {
     middlewares.unshift(evalSourceMapMiddleware(devServer));
@@ -281,14 +281,15 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
 
 const plugins: WebpackPluginInstance[] = [
   new AutomaticPrefetchPlugin(),
-  new EnvironmentPlugin([
-    'NODE_ENV',
-    'PUBLIC_URL',
-    'APP_RUNTIME_ENV',
-    'WDS_SOCKET_HOST',
-    'WDS_SOCKET_PORT',
-    'WDS_SOCKET_PATH',
-  ]),
+  new DotEnv(),
+  // new EnvironmentPlugin([
+  //   'NODE_ENV',
+  //   'PUBLIC_URL',
+  //   'APP_RUNTIME_ENV',
+  //   'WDS_SOCKET_HOST',
+  //   'WDS_SOCKET_PORT',
+  //   'WDS_SOCKET_PATH',
+  // ]),
   new IgnorePlugin({
     resourceRegExp: /^\.\/locale$/,
     contextRegExp: /moment$/,
@@ -538,7 +539,7 @@ const configuration: Configuration = {
     idleTimeout: 60000,
     idleTimeoutAfterLargeChanges: 1000,
     idleTimeoutForInitialStore: 0,
-    profile: true,
+    profile: false,
     buildDependencies: {
       config: [__filename],
     },

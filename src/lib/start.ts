@@ -67,7 +67,8 @@ const protocol: string =
   (server.options.server || ({ type: 'http' } as any)).type || 'http';
 const address = ip.address();
 
-const PACK = require(path.resolve('package.json'));
+const PACK: { name: string } = require(path.resolve('package.json'));
+
 compiler.hooks.done.tap('done', (stats) => {
   if (isInteractive) {
     clearConsole();
@@ -94,6 +95,19 @@ compiler.hooks.done.tap('done', (stats) => {
 });
 
 server.startCallback(() => {
+  if (isInteractive) {
+    clearConsole();
+  }
   console.log(chalk.cyan('Starting the development server...\n'));
   openBrowser(`${protocol}://localhost:${port}`);
+});
+
+process.on('SIGINT', function () {
+  server.stopCallback();
+  process.exit();
+});
+
+process.on('SIGTERM', function () {
+  server.stopCallback();
+  process.exit();
 });
