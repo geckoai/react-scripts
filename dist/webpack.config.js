@@ -49,6 +49,7 @@ const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
 const DotEnv = require('dotenv-webpack');
+const HtmlWebpackDeployPlugin = require('html-webpack-deploy-plugin');
 let babelLoaderOptions = {
     presets: [
         '@babel/preset-env',
@@ -171,6 +172,7 @@ let devServerOptions = {
     open: false,
 };
 let bundleAnalyzerOptions = {};
+let deployOptions = null;
 if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     const config = require(path_1.default.resolve('project.config.js'));
     if (config.webpack) {
@@ -217,6 +219,12 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     }
     else {
         bundleAnalyzerOptions = null;
+    }
+    if (config.deployOptions) {
+        deployOptions = config.deployOptions;
+    }
+    else {
+        deployOptions = null;
     }
 }
 /**
@@ -322,6 +330,9 @@ if (eslintOptions) {
 }
 if (stylelintOptions) {
     plugins.push(new stylelint_webpack_plugin_1.default(stylelintOptions));
+}
+if (deployOptions) {
+    plugins.push(new HtmlWebpackDeployPlugin(deployOptions));
 }
 if (isProduction) {
     plugins.push(new copy_webpack_plugin_1.default({

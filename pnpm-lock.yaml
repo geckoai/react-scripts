@@ -95,6 +95,9 @@ importers:
       fork-ts-checker-webpack-plugin:
         specifier: 6.5.2
         version: 6.5.2(eslint@8.15.0)(typescript@4.6.4)(webpack@5.64.4)
+      html-webpack-deploy-plugin:
+        specifier: ^3.0.0
+        version: 3.0.0(html-webpack-plugin@5.6.0(webpack@5.64.4))(webpack@5.64.4)
       html-webpack-plugin:
         specifier: ^5.5.0
         version: 5.6.0(webpack@5.64.4)
@@ -1979,6 +1982,12 @@ packages:
     peerDependencies:
       webpack: ^5.1.0
 
+  copy-webpack-plugin@7.0.0:
+    resolution: {integrity: sha512-SLjQNa5iE3BoCP76ESU9qYo9ZkEWtXoZxDurHoqPchAFRblJ9g96xTeC560UXBMre1Nx6ixIIUfiY3VcjpJw3g==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      webpack: ^5.1.0
+
   core-js-compat@3.37.0:
     resolution: {integrity: sha512-vYq4L+T8aS5UuFg4UwDhc7YNRWVeVZwltad9C/jV3R2LgVOpS9BDr7l/WL6BN0dbV3k1XejPTHqqEzJgsa0frA==}
 
@@ -2983,6 +2992,13 @@ packages:
     resolution: {integrity: sha512-ztqyC3kLto0e9WbNp0aeP+M3kTt+nbaIveGmUxAtZa+8iFgKLUOD4YKM5j+f3QD89bra7UeumolZHKuOXnTmeQ==}
     engines: {node: '>=8'}
 
+  html-webpack-deploy-plugin@3.0.0:
+    resolution: {integrity: sha512-aiYqT5m+4ptmrAkjLNwExLDsxTbHdlpz0fNTXTXjkWcI+OFevbVrLDs8wVo0yXzac5fdRcwv/apmVImFi3yZpg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      html-webpack-plugin: ^5.0.0
+      webpack: ^5.20.1
+
   html-webpack-plugin@5.6.0:
     resolution: {integrity: sha512-iwaY4wzbe48AfKLZ/Cc8k0L+FKG6oSNRaZ8x5A/T/IVDGyXcbHncM9TdDa93wn0FsSm82FhTKW7f3vS61thXAw==}
     engines: {node: '>=10.13.0'}
@@ -2994,6 +3010,13 @@ packages:
         optional: true
       webpack:
         optional: true
+
+  html-webpack-tags-plugin@3.0.2:
+    resolution: {integrity: sha512-jZ4IHjT8AWyNa4RJ+8p0+AGkunLf1H5E/IjzW+9BOQbJ39Dy2jZULnxseXsEAiFxu6DX6z+sOZKV9rhbEDtpqA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      html-webpack-plugin: ^5.0.0
+      webpack: ^5.0.0
 
   htmlparser2@6.1.0:
     resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
@@ -4609,6 +4632,9 @@ packages:
   send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
     engines: {node: '>= 0.8.0'}
+
+  serialize-javascript@5.0.1:
+    resolution: {integrity: sha512-SaaNal9imEO737H2c05Og0/8LUXG7EnsZyMa8MzkmuHoELfT6txuj0cMqRj6zfPKnmQ1yasR4PCJc8x+M4JSPA==}
 
   serialize-javascript@6.0.0:
     resolution: {integrity: sha512-Qr3TosvguFt8ePWqsvRfrKyQXIiW+nGbYpy8XK24NQHE83caxWt+mIymTT19DGFbNWNLfEwsrkSmN64lVWB9ag==}
@@ -7446,6 +7472,18 @@ snapshots:
       serialize-javascript: 6.0.2
       webpack: 5.64.4
 
+  copy-webpack-plugin@7.0.0(webpack@5.64.4):
+    dependencies:
+      fast-glob: 3.3.2
+      glob-parent: 5.1.2
+      globby: 11.1.0
+      loader-utils: 2.0.4
+      normalize-path: 3.0.0
+      p-limit: 3.1.0
+      schema-utils: 3.3.0
+      serialize-javascript: 5.0.1
+      webpack: 5.64.4
+
   core-js-compat@3.37.0:
     dependencies:
       browserslist: 4.23.0
@@ -8664,6 +8702,14 @@ snapshots:
 
   html-tags@3.3.1: {}
 
+  html-webpack-deploy-plugin@3.0.0(html-webpack-plugin@5.6.0(webpack@5.64.4))(webpack@5.64.4):
+    dependencies:
+      copy-webpack-plugin: 7.0.0(webpack@5.64.4)
+      find-up: 5.0.0
+      html-webpack-plugin: 5.6.0(webpack@5.64.4)
+      html-webpack-tags-plugin: 3.0.2(html-webpack-plugin@5.6.0(webpack@5.64.4))(webpack@5.64.4)
+      webpack: 5.64.4
+
   html-webpack-plugin@5.6.0(webpack@5.64.4):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
@@ -8672,6 +8718,14 @@ snapshots:
       pretty-error: 4.0.0
       tapable: 2.2.1
     optionalDependencies:
+      webpack: 5.64.4
+
+  html-webpack-tags-plugin@3.0.2(html-webpack-plugin@5.6.0(webpack@5.64.4))(webpack@5.64.4):
+    dependencies:
+      glob: 7.2.3
+      html-webpack-plugin: 5.6.0(webpack@5.64.4)
+      minimatch: 3.1.2
+      slash: 3.0.0
       webpack: 5.64.4
 
   htmlparser2@6.1.0:
@@ -10298,6 +10352,10 @@ snapshots:
       statuses: 2.0.1
     transitivePeerDependencies:
       - supports-color
+
+  serialize-javascript@5.0.1:
+    dependencies:
+      randombytes: 2.1.0
 
   serialize-javascript@6.0.0:
     dependencies:
