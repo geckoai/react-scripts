@@ -544,7 +544,7 @@ const configuration = {
                 }),
             ]
             : [],
-        splitChunks: isProduction && {
+        splitChunks: {
             maxAsyncSize: 200000,
             maxInitialSize: 100000,
             maxSize: 200000,

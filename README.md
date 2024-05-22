@@ -48,3 +48,39 @@ npm build
 # or
 yarn build
 ```
+
+
+### Close bundleAnalyzer
+
+Open file `project.config.js`
+
+```ts
+{
+  /**
+   * BundleAnalyzerPlugin
+   * https://www.npmjs.com/package/webpack-bundle-analyzer
+   */
+  bundleAnalyzer: null
+}
+```
+
+### Start args
+
+```shell
+# boot of dev mode
+react-scripts start -M 8192
+
+# boot of build mode
+react-scripts build -M 8192
+
+```
+or change file `package.json` field `scripts`:
+
+```json
+{
+  "scripts": {
+    "start": "react-scripts start -M 8192",
+    "build": "react-scripts build -M 8192"
+  }
+}
+```

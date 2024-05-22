@@ -48,7 +48,7 @@ compiler.hooks.beforeCompile.tap('beforeCompile', () => {
     }
 });
 if (webpackConfig) {
-    if (webpackConfig.externals) {
+    if (webpackConfig.externals && webpackConfig.externalsType !== 'script') {
         try {
             console.log(`Copy externals files from ${constants_1.PACKAGE_DIR} to ${constants_1.DIST_DIR}`);
             const strings = Object.keys(webpackConfig.externals);

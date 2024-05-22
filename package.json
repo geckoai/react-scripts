@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/react-scripts",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -125,6 +125,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "packageManager": "pnpm@9.1.0"
+  }
 }

@@ -37,7 +37,7 @@ function build() {
     rimraf_1.default.sync(path_1.default.resolve('dist'));
     const { webpackConfig } = require('../webpack.config');
     if (webpackConfig) {
-        if (webpackConfig.externals) {
+        if (webpackConfig.externals && webpackConfig.externalsType !== 'script') {
             try {
                 console.log(`Copy externals files from ${constants_1.PACKAGE_DIR} to ${constants_1.DIST_DIR}`);
                 const strings = Object.keys(webpackConfig.externals);
