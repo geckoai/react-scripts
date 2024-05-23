@@ -30,8 +30,6 @@ const path_1 = __importDefault(require("path"));
 const chalk_1 = __importDefault(require("chalk"));
 const clear_console_1 = require("./clear-console");
 const ip_1 = __importDefault(require("ip"));
-const constants_1 = require("./constants");
-const copy_1 = require("./copy");
 const isInteractive = process.stdout.isTTY;
 const openBrowser = require('react-dev-utils/openBrowser');
 const { webpackConfig, ServerConfiguration } = require('../webpack.config');
@@ -47,18 +45,6 @@ compiler.hooks.beforeCompile.tap('beforeCompile', () => {
         console.log('Compiling...');
     }
 });
-if (webpackConfig) {
-    if (webpackConfig.externals && webpackConfig.externalsType !== 'script') {
-        try {
-            console.log(`Copy externals files from ${constants_1.PACKAGE_DIR} to ${constants_1.DIST_DIR}`);
-            const strings = Object.keys(webpackConfig.externals);
-            (0, copy_1.copy)(constants_1.PACKAGE_DIR, strings, constants_1.DIST_DIR);
-        }
-        catch (e) {
-            console.error(e);
-        }
-    }
-}
 const server = new webpack_dev_server_1.default(ServerConfiguration, compiler);
 const port = server.options.port || 3000;
 server.options.open = false;

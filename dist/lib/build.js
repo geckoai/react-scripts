@@ -28,26 +28,12 @@ exports.build = void 0;
 const webpack_1 = require("webpack");
 const rimraf_1 = __importDefault(require("rimraf"));
 const path_1 = __importDefault(require("path"));
-const constants_1 = require("./constants");
-const copy_1 = require("./copy");
 /**
  * build
  */
 function build() {
     rimraf_1.default.sync(path_1.default.resolve('dist'));
     const { webpackConfig } = require('../webpack.config');
-    if (webpackConfig) {
-        if (webpackConfig.externals && webpackConfig.externalsType !== 'script') {
-            try {
-                console.log(`Copy externals files from ${constants_1.PACKAGE_DIR} to ${constants_1.DIST_DIR}`);
-                const strings = Object.keys(webpackConfig.externals);
-                (0, copy_1.copy)(constants_1.PACKAGE_DIR, strings, constants_1.DIST_DIR);
-            }
-            catch (e) {
-                console.error(e);
-            }
-        }
-    }
     const compiler = (0, webpack_1.webpack)(webpackConfig);
     compiler.run((err, status) => {
         if (err) {
