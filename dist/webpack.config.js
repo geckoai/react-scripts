@@ -128,7 +128,7 @@ const miniCssExtractPluginOptions = {
     publicPath: process.env.PUBLIC_URL,
 };
 let fileLoaderOptions = {};
-let stylelintOptions = null;
+let stylelintOptions = {};
 let eslintOptions = {
     extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
     formatter: require.resolve('react-dev-utils/eslintFormatter'),
@@ -154,7 +154,7 @@ let devServerOptions = {
     client: {
         logging: 'none',
         progress: true,
-        overlay: false,
+        overlay: true,
     },
     port: 3000,
     hot: true,
@@ -200,16 +200,25 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
         }
     }
     if (config.eslint) {
-        eslintOptions = Object.assign(eslintOptions, config.eslint);
+        if (typeof config.eslint !== 'boolean') {
+            eslintOptions = Object.assign(eslintOptions, config.eslint);
+        }
     }
     else {
         eslintOptions = null;
     }
     if (config.styleLint) {
-        stylelintOptions = Object.assign(stylelintOptions, config.styleLint);
+        if (typeof config.styleLint !== 'boolean') {
+            stylelintOptions = Object.assign(stylelintOptions, config.styleLint);
+        }
+    }
+    else {
+        stylelintOptions = null;
     }
     if (config.file) {
-        fileLoaderOptions = Object.assign(fileLoaderOptions, config.file);
+        if (typeof config.file !== 'boolean') {
+            fileLoaderOptions = Object.assign(fileLoaderOptions, config.file);
+        }
     }
     if (config.devServer) {
         devServerOptions = Object.assign(devServerOptions, config.devServer);

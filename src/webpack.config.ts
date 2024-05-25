@@ -31,8 +31,12 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import StylelintWebpackPlugin from 'stylelint-webpack-plugin';
-import ESLintWebpackPlugin from 'eslint-webpack-plugin';
+import StylelintWebpackPlugin, {
+  Options as StylelintOpts,
+} from 'stylelint-webpack-plugin';
+import ESLintWebpackPlugin, {
+  Options as EslintOpts,
+} from 'eslint-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
@@ -140,8 +144,8 @@ const miniCssExtractPluginOptions = {
   publicPath: process.env.PUBLIC_URL,
 };
 let fileLoaderOptions = {};
-let stylelintOptions = null;
-let eslintOptions: any = {
+let stylelintOptions: StylelintOpts | null = {};
+let eslintOptions: EslintOpts | null = {
   extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
   formatter: require.resolve('react-dev-utils/eslintFormatter'),
   cache: true,
@@ -168,7 +172,7 @@ let devServerOptions: WebpackDevServer.Configuration = {
   client: {
     logging: 'none',
     progress: true,
-    overlay: false,
+    overlay: true,
   },
   port: 3000,
   hot: true,
@@ -220,17 +224,25 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
   }
 
   if (config.eslint) {
-    eslintOptions = Object.assign(eslintOptions, config.eslint);
+    if (typeof config.eslint !== 'boolean') {
+      eslintOptions = Object.assign(eslintOptions, config.eslint);
+    }
   } else {
     eslintOptions = null;
   }
 
   if (config.styleLint) {
-    stylelintOptions = Object.assign(stylelintOptions, config.styleLint);
+    if (typeof config.styleLint !== 'boolean') {
+      stylelintOptions = Object.assign(stylelintOptions, config.styleLint);
+    }
+  } else {
+    stylelintOptions = null;
   }
 
   if (config.file) {
-    fileLoaderOptions = Object.assign(fileLoaderOptions, config.file);
+    if (typeof config.file !== 'boolean') {
+      fileLoaderOptions = Object.assign(fileLoaderOptions, config.file);
+    }
   }
 
   if (config.devServer) {
@@ -370,7 +382,7 @@ if (isProduction) {
         {
           from: path.resolve('public'),
           to: path.resolve('dist'),
-          filter: (p): boolean => path.extname(p) !== '.html',
+          filter: (p: any): boolean => path.extname(p) !== '.html',
         },
       ],
     }),
