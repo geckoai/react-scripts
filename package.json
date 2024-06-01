@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/react-scripts",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -68,7 +68,7 @@
     "eslint": "8.15.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-config-react-app": "7.0.1",
-    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-prettier": "4.2.1",
     "eslint-webpack-plugin": "3.1.1",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "6.5.2",
