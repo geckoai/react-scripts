@@ -35,6 +35,7 @@ declare interface CustomConfig {
   styleLint?: {};
   file?: {};
   devServer?: {};
+  alias?: {};
   swaggers?: Swagger[];
 }
 

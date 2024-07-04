@@ -195,6 +195,8 @@ let bundleAnalyzerOptions: object | null = {};
 
 let deployOptions = null;
 
+let alias = null;
+
 if (fs.existsSync(path.resolve('project.config.js'))) {
   const config: any = require(path.resolve('project.config.js'));
   if (config.webpack) {
@@ -221,6 +223,10 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
     if (postcss) {
       postCssOptions = Object.assign(postCssOptions, postcss);
     }
+  }
+
+  if (config.alias) {
+    alias = config.alias;
   }
 
   if (config.eslint) {
@@ -580,6 +586,7 @@ const configuration: Configuration = {
     // Add `.ts` and `.tsx` as a resolvable extension.
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.node'],
     alias: {
+      ...alias,
       src: path.resolve('src'),
     },
   },
