@@ -22,10 +22,9 @@
 
 import {
   Configuration,
-  // WatchIgnorePlugin,
-  WebpackPluginInstance,
   IgnorePlugin,
   AutomaticPrefetchPlugin,
+  WebpackPluginInstance,
 } from 'webpack';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -48,21 +47,21 @@ import ignoredFiles from './ignoredFiles';
 import WebpackDevServer from 'webpack-dev-server';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import TerserPlugin from 'terser-webpack-plugin';
+import * as process from 'node:process';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const webpackDevClientEntry = require.resolve(
-  'react-dev-utils/webpackHotDevClient'
-);
-const reactRefreshOverlayEntry = require.resolve(
-  'react-dev-utils/refreshOverlayInterop'
-);
-
-const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
-const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
-const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
 const DotEnv = require('dotenv-webpack');
 const HtmlWebpackDeployPlugin = require('html-webpack-deploy-plugin');
+const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
+const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
+const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
+
+const host = process.env.HOST;
+const port = process.env.PORT;
+const sockHost = process.env.WDS_SOCKET_HOST;
+const sockPath = process.env.WDS_SOCKET_PATH;
+const sockPort = process.env.WDS_SOCKET_PORT;
 
 let babelLoaderOptions = {
   presets: [
@@ -75,26 +74,23 @@ let babelLoaderOptions = {
       },
     ],
   ],
-  plugins: isProduction
-    ? [
-        'transform-typescript-metadata',
-        ['@babel/plugin-proposal-decorators', { legacy: true }],
-        '@babel/plugin-proposal-class-properties',
-        [
-          '@babel/plugin-transform-runtime',
-          {
-            regenerator: true,
-            corejs: 2,
-            version: '^7.7.4',
-          },
-        ],
-      ]
-    : [
-        require.resolve('react-refresh/babel'),
-        'transform-typescript-metadata',
-        ['@babel/plugin-proposal-decorators', { legacy: true }],
-        '@babel/plugin-proposal-class-properties',
-      ],
+  plugins: [
+    isProduction && 'transform-typescript-metadata',
+    isProduction && ['@babel/plugin-proposal-decorators', { legacy: true }],
+    isProduction && '@babel/plugin-proposal-class-properties',
+    isProduction && [
+      '@babel/plugin-transform-runtime',
+      {
+        regenerator: true,
+        corejs: 2,
+        version: '^7.7.4',
+      },
+    ],
+    !isProduction && require.resolve('react-refresh/babel'),
+    !isProduction && 'transform-typescript-metadata',
+    !isProduction && ['@babel/plugin-proposal-decorators', { legacy: true }],
+    !isProduction && '@babel/plugin-proposal-class-properties',
+  ].filter(Boolean),
   cacheDirectory: true,
   cacheCompression: false,
   exclude: [
@@ -104,13 +100,6 @@ let babelLoaderOptions = {
   ],
   compact: isProduction,
 };
-
-// const tsLoaderOptions = {
-//   // disable type checker - we will use it in fork plugin
-//   transpileOnly: true,
-//   allowTsInNodeModules: true,
-//   configFile: path.resolve('tsconfig.json'),
-// };
 
 let cssLoaderOptions = {
   sourceMap: !isProduction,
@@ -147,7 +136,6 @@ let fileLoaderOptions = {};
 let stylelintOptions: StylelintOpts | null = {};
 let eslintOptions: EslintOpts | null = {
   extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
-  formatter: require.resolve('react-dev-utils/eslintFormatter'),
   cache: true,
   eslintPath: require.resolve('eslint'),
   cacheLocation: path.resolve('node_modules', '.cache/.eslintcache'),
@@ -159,8 +147,6 @@ let eslintOptions: EslintOpts | null = {
   },
 };
 
-let customWebpackConfig: any;
-
 let devServerOptions: WebpackDevServer.Configuration = {
   static: {
     directory: path.resolve('public'),
@@ -170,12 +156,23 @@ let devServerOptions: WebpackDevServer.Configuration = {
     },
   },
   client: {
+    webSocketURL: {
+      // Enable custom sockjs pathname for websocket connection to hot reloading server.
+      // Enable custom sockjs hostname, pathname and port for websocket connection
+      // to hot reloading server.
+      hostname: sockHost,
+      pathname: sockPath,
+      port: sockPort,
+    },
     logging: 'none',
-    progress: true,
-    overlay: true,
+    progress: false,
+    overlay: {
+      errors: true,
+      warnings: false,
+    },
   },
-  port: 3000,
-  hot: true,
+  host,
+  port,
   historyApiFallback: {
     disableDotRule: true,
     index: process.env.PUBLIC_URL || '/',
@@ -191,10 +188,10 @@ let devServerOptions: WebpackDevServer.Configuration = {
   compress: true,
   open: false,
 };
+
+let customWebpackConfig: any;
 let bundleAnalyzerOptions: object | null = {};
-
 let deployOptions = null;
-
 let alias = null;
 
 if (fs.existsSync(path.resolve('project.config.js'))) {
@@ -205,9 +202,6 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
   if (config.babel) {
     babelLoaderOptions = Object.assign(babelLoaderOptions, config.babel);
   }
-  // if (config.ts) {
-  //   tsLoaderOptions = Object.assign(tsLoaderOptions as any, config.ts);
-  // }
 
   if (config.style) {
     const { sass, less, css, postcss } = config.style;
@@ -253,6 +247,13 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
 
   if (config.devServer) {
     devServerOptions = Object.assign(devServerOptions, config.devServer);
+    if (devServerOptions.host && devServerOptions.host !== process.env.HOST) {
+      process.env.HOST = devServerOptions.host;
+    }
+
+    if (devServerOptions.port && devServerOptions.port !== process.env.PORT) {
+      process.env.PORT = devServerOptions.host;
+    }
   }
 
   if (config.bundleAnalyzer) {
@@ -306,122 +307,8 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
   ];
 };
 
-const plugins: WebpackPluginInstance[] = [
-  new AutomaticPrefetchPlugin(),
-  new DotEnv(),
-  // new EnvironmentPlugin([
-  //   'NODE_ENV',
-  //   'PUBLIC_URL',
-  //   'APP_RUNTIME_ENV',
-  //   'WDS_SOCKET_HOST',
-  //   'WDS_SOCKET_PORT',
-  //   'WDS_SOCKET_PATH',
-  // ]),
-  new IgnorePlugin({
-    resourceRegExp: /^\.\/locale$/,
-    contextRegExp: /moment$/,
-  }),
-  // new WatchIgnorePlugin({
-  //   paths: [/\.js$/, /\.d\.ts$/],
-  // }),
-  new HtmlWebpackPlugin({
-    publicPath: process.env.PUBLIC_URL,
-    inject: true,
-    filename: 'index.html',
-    template: path.resolve('public', 'index.html'),
-    minify: true,
-  }),
-  new ForkTsCheckerWebpackPlugin({
-    async: !isProduction,
-    typescript: {
-      configOverwrite: {
-        compilerOptions: {
-          sourceMap: !isProduction,
-          skipLibCheck: true,
-          inlineSourceMap: false,
-          declarationMap: false,
-          noEmit: true,
-          incremental: true,
-          tsBuildInfoFile: path.resolve(),
-        },
-      },
-      context: path.resolve(),
-      diagnosticOptions: {
-        syntactic: true,
-      },
-      mode: 'write-references',
-    },
-    issue: {
-      include: [
-        { file: '../**/src/**/*.{ts,tsx}' },
-        { file: '**/src/**/*.{ts,tsx}' },
-      ],
-      exclude: [
-        { file: '**/src/**/__tests__/**' },
-        { file: '**/src/**/?(*.){spec|test}.*' },
-        { file: '**/src/setupProxy.*' },
-        { file: '**/src/setupTests.*' },
-      ],
-    },
-    logger: {
-      infrastructure: 'silent',
-    },
-  }),
-];
-
-if (eslintOptions) {
-  plugins.push(new ESLintWebpackPlugin(eslintOptions));
-}
-
-if (stylelintOptions) {
-  plugins.push(new StylelintWebpackPlugin(stylelintOptions));
-}
-
-if (deployOptions) {
-  plugins.push(new HtmlWebpackDeployPlugin(deployOptions));
-}
-
-if (isProduction) {
-  plugins.push(
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve('public'),
-          to: path.resolve('dist'),
-          filter: (p: any): boolean => path.extname(p) !== '.html',
-        },
-      ],
-    }),
-    new WebpackManifestPlugin({
-      fileName: 'asset-manifest.json',
-      publicPath: process.env.PUBLIC_URL,
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'assets/styles/[name].[contenthash:8].css',
-      ignoreOrder: isProduction,
-    })
-  );
-  if (bundleAnalyzerOptions) {
-    plugins.push(new BundleAnalyzerPlugin(bundleAnalyzerOptions));
-  }
-} else {
-  plugins.push(
-    new ReactRefreshPlugin({
-      overlay: {
-        entry: webpackDevClientEntry,
-        // The expected exports are slightly different from what the overlay exports,
-        // so an interop is included here to enable feedback on module-level errors.
-        module: reactRefreshOverlayEntry,
-        // Since we ship a custom dev client and overlay integration,
-        // the bundled socket handling logic can be eliminated.
-        sockIntegration: false,
-      },
-    })
-  );
-}
-
 const configuration: Configuration = {
-  entry: [path.resolve('src')],
+  entry: [path.resolve('src'), require.resolve('react-refresh/runtime')],
   module: {
     rules: [
       {
@@ -552,6 +439,7 @@ const configuration: Configuration = {
       },
       {
         test: /\.tsx?$/,
+        exclude: /(node_modules|bower_components)/,
         use: [
           'thread-loader',
           {
@@ -574,14 +462,13 @@ const configuration: Configuration = {
     buildDependencies: {
       config: [__filename],
     },
-    //cacheDirectory: path.resolve('node_modules', '.cache', 'webpack'),
   },
   output: {
     publicPath: process.env.PUBLIC_URL,
     path: path.resolve('dist'),
     filename: 'assets/js/[name].[contenthash:8].js',
   },
-  target: ['web', 'es5'],
+  target: isProduction ? 'browserslist' : 'web',
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.node'],
@@ -590,25 +477,105 @@ const configuration: Configuration = {
       src: path.resolve('src'),
     },
   },
-  plugins,
+  plugins: [
+    new AutomaticPrefetchPlugin(),
+    new DotEnv({ systemvars: true }),
+    new IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
+    new HtmlWebpackPlugin({
+      publicPath: process.env.PUBLIC_URL,
+      inject: true,
+      filename: 'index.html',
+      template: path.resolve('public', 'index.html'),
+      minify: true,
+    }),
+    new ForkTsCheckerWebpackPlugin({
+      async: !isProduction,
+      typescript: {
+        configOverwrite: {
+          compilerOptions: {
+            sourceMap: !isProduction,
+            skipLibCheck: true,
+            inlineSourceMap: false,
+            declarationMap: false,
+            noEmit: true,
+            incremental: true,
+            tsBuildInfoFile: path.resolve(),
+          },
+        },
+        context: path.resolve(),
+        diagnosticOptions: {
+          syntactic: true,
+        },
+        mode: 'write-references',
+      },
+      issue: {
+        include: [
+          { file: '../**/src/**/*.{ts,tsx}' },
+          { file: '**/src/**/*.{ts,tsx}' },
+        ],
+        exclude: [
+          { file: '**/src/**/__tests__/**' },
+          { file: '**/src/**/?(*.){spec|test}.*' },
+          { file: '**/src/setupProxy.*' },
+          { file: '**/src/setupTests.*' },
+        ],
+      },
+      logger: {
+        infrastructure: 'silent',
+      },
+    }),
+    eslintOptions && new ESLintWebpackPlugin(eslintOptions),
+    stylelintOptions && new StylelintWebpackPlugin(stylelintOptions),
+    deployOptions && isProduction && new HtmlWebpackDeployPlugin(deployOptions),
+    !isProduction &&
+      new ReactRefreshPlugin({
+        overlay: false,
+      }),
+    isProduction &&
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve('public'),
+            to: path.resolve('dist'),
+            filter: (p: any): boolean => path.extname(p) !== '.html',
+          },
+        ],
+      }),
+    isProduction &&
+      new WebpackManifestPlugin({
+        fileName: 'asset-manifest.json',
+        publicPath: process.env.PUBLIC_URL,
+      }),
+    isProduction &&
+      new MiniCssExtractPlugin({
+        filename: 'assets/styles/[name].[contenthash:8].css',
+        ignoreOrder: isProduction,
+      }),
+    isProduction &&
+      bundleAnalyzerOptions &&
+      new BundleAnalyzerPlugin(bundleAnalyzerOptions),
+  ].filter(Boolean),
   optimization: {
+    runtimeChunk: 'single',
     minimize: isProduction,
-    minimizer: isProduction
-      ? [
-          new CssMinimizerPlugin(),
-          new TerserPlugin({
-            exclude: [/\/npm/, /^npm/, /\/public/, /^public/],
-            parallel: true,
-            terserOptions: {
-              compress: {
-                unused: true,
-                drop_console: true,
-                drop_debugger: true,
-              },
+    minimizer: [
+      isProduction && new CssMinimizerPlugin(),
+      isProduction &&
+        new TerserPlugin({
+          exclude: [/\/npm/, /^npm/, /\/public/, /^public/],
+          parallel: true,
+          terserOptions: {
+            compress: {
+              unused: true,
+              drop_console: true,
+              drop_debugger: true,
             },
-          }),
-        ]
-      : [],
+          },
+        }),
+    ].filter(Boolean) as WebpackPluginInstance[],
     splitChunks: {
       maxAsyncSize: 200000,
       maxInitialSize: 100000,
@@ -624,7 +591,7 @@ const configuration: Configuration = {
   },
   stats: false,
   performance: false,
-  devtool: isProduction ? false : 'inline-source-map',
+  devtool: !isProduction && 'inline-source-map',
   mode: isProduction ? 'production' : 'development',
 };
 

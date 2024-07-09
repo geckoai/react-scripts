@@ -20,6 +20,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -42,14 +65,18 @@ const fs_1 = __importDefault(require("fs"));
 const ignoredFiles_1 = __importDefault(require("./ignoredFiles"));
 const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
+const process = __importStar(require("node:process"));
 const isProduction = process.env.NODE_ENV === 'production';
-const webpackDevClientEntry = require.resolve('react-dev-utils/webpackHotDevClient');
-const reactRefreshOverlayEntry = require.resolve('react-dev-utils/refreshOverlayInterop');
-const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
-const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
-const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
 const DotEnv = require('dotenv-webpack');
 const HtmlWebpackDeployPlugin = require('html-webpack-deploy-plugin');
+const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware');
+const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
+const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
+const host = process.env.HOST;
+const port = process.env.PORT;
+const sockHost = process.env.WDS_SOCKET_HOST;
+const sockPath = process.env.WDS_SOCKET_PATH;
+const sockPort = process.env.WDS_SOCKET_PORT;
 let babelLoaderOptions = {
     presets: [
         '@babel/preset-env',
@@ -61,26 +88,23 @@ let babelLoaderOptions = {
             },
         ],
     ],
-    plugins: isProduction
-        ? [
-            'transform-typescript-metadata',
-            ['@babel/plugin-proposal-decorators', { legacy: true }],
-            '@babel/plugin-proposal-class-properties',
-            [
-                '@babel/plugin-transform-runtime',
-                {
-                    regenerator: true,
-                    corejs: 2,
-                    version: '^7.7.4',
-                },
-            ],
-        ]
-        : [
-            require.resolve('react-refresh/babel'),
-            'transform-typescript-metadata',
-            ['@babel/plugin-proposal-decorators', { legacy: true }],
-            '@babel/plugin-proposal-class-properties',
+    plugins: [
+        isProduction && 'transform-typescript-metadata',
+        isProduction && ['@babel/plugin-proposal-decorators', { legacy: true }],
+        isProduction && '@babel/plugin-proposal-class-properties',
+        isProduction && [
+            '@babel/plugin-transform-runtime',
+            {
+                regenerator: true,
+                corejs: 2,
+                version: '^7.7.4',
+            },
         ],
+        !isProduction && require.resolve('react-refresh/babel'),
+        !isProduction && 'transform-typescript-metadata',
+        !isProduction && ['@babel/plugin-proposal-decorators', { legacy: true }],
+        !isProduction && '@babel/plugin-proposal-class-properties',
+    ].filter(Boolean),
     cacheDirectory: true,
     cacheCompression: false,
     exclude: [
@@ -90,12 +114,6 @@ let babelLoaderOptions = {
     ],
     compact: isProduction,
 };
-// const tsLoaderOptions = {
-//   // disable type checker - we will use it in fork plugin
-//   transpileOnly: true,
-//   allowTsInNodeModules: true,
-//   configFile: path.resolve('tsconfig.json'),
-// };
 let cssLoaderOptions = {
     sourceMap: !isProduction,
 };
@@ -131,7 +149,6 @@ let fileLoaderOptions = {};
 let stylelintOptions = {};
 let eslintOptions = {
     extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
-    formatter: require.resolve('react-dev-utils/eslintFormatter'),
     cache: true,
     eslintPath: require.resolve('eslint'),
     cacheLocation: path_1.default.resolve('node_modules', '.cache/.eslintcache'),
@@ -142,7 +159,6 @@ let eslintOptions = {
         extends: [require.resolve('eslint-config-react-app/base')],
     },
 };
-let customWebpackConfig;
 let devServerOptions = {
     static: {
         directory: path_1.default.resolve('public'),
@@ -152,12 +168,23 @@ let devServerOptions = {
         },
     },
     client: {
+        webSocketURL: {
+            // Enable custom sockjs pathname for websocket connection to hot reloading server.
+            // Enable custom sockjs hostname, pathname and port for websocket connection
+            // to hot reloading server.
+            hostname: sockHost,
+            pathname: sockPath,
+            port: sockPort,
+        },
         logging: 'none',
-        progress: true,
-        overlay: true,
+        progress: false,
+        overlay: {
+            errors: true,
+            warnings: false,
+        },
     },
-    port: 3000,
-    hot: true,
+    host,
+    port,
     historyApiFallback: {
         disableDotRule: true,
         index: process.env.PUBLIC_URL || '/',
@@ -171,6 +198,7 @@ let devServerOptions = {
     compress: true,
     open: false,
 };
+let customWebpackConfig;
 let bundleAnalyzerOptions = {};
 let deployOptions = null;
 let alias = null;
@@ -182,9 +210,6 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     if (config.babel) {
         babelLoaderOptions = Object.assign(babelLoaderOptions, config.babel);
     }
-    // if (config.ts) {
-    //   tsLoaderOptions = Object.assign(tsLoaderOptions as any, config.ts);
-    // }
     if (config.style) {
         const { sass, less, css, postcss } = config.style;
         if (css) {
@@ -226,6 +251,12 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
     }
     if (config.devServer) {
         devServerOptions = Object.assign(devServerOptions, config.devServer);
+        if (devServerOptions.host && devServerOptions.host !== process.env.HOST) {
+            process.env.HOST = devServerOptions.host;
+        }
+        if (devServerOptions.port && devServerOptions.port !== process.env.PORT) {
+            process.env.PORT = devServerOptions.host;
+        }
     }
     if (config.bundleAnalyzer) {
         bundleAnalyzerOptions = config.bundleAnalyzer;
@@ -276,112 +307,8 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
         postCssLoader,
     ];
 };
-const plugins = [
-    new webpack_1.AutomaticPrefetchPlugin(),
-    new DotEnv(),
-    // new EnvironmentPlugin([
-    //   'NODE_ENV',
-    //   'PUBLIC_URL',
-    //   'APP_RUNTIME_ENV',
-    //   'WDS_SOCKET_HOST',
-    //   'WDS_SOCKET_PORT',
-    //   'WDS_SOCKET_PATH',
-    // ]),
-    new webpack_1.IgnorePlugin({
-        resourceRegExp: /^\.\/locale$/,
-        contextRegExp: /moment$/,
-    }),
-    // new WatchIgnorePlugin({
-    //   paths: [/\.js$/, /\.d\.ts$/],
-    // }),
-    new html_webpack_plugin_1.default({
-        publicPath: process.env.PUBLIC_URL,
-        inject: true,
-        filename: 'index.html',
-        template: path_1.default.resolve('public', 'index.html'),
-        minify: true,
-    }),
-    new fork_ts_checker_webpack_plugin_1.default({
-        async: !isProduction,
-        typescript: {
-            configOverwrite: {
-                compilerOptions: {
-                    sourceMap: !isProduction,
-                    skipLibCheck: true,
-                    inlineSourceMap: false,
-                    declarationMap: false,
-                    noEmit: true,
-                    incremental: true,
-                    tsBuildInfoFile: path_1.default.resolve(),
-                },
-            },
-            context: path_1.default.resolve(),
-            diagnosticOptions: {
-                syntactic: true,
-            },
-            mode: 'write-references',
-        },
-        issue: {
-            include: [
-                { file: '../**/src/**/*.{ts,tsx}' },
-                { file: '**/src/**/*.{ts,tsx}' },
-            ],
-            exclude: [
-                { file: '**/src/**/__tests__/**' },
-                { file: '**/src/**/?(*.){spec|test}.*' },
-                { file: '**/src/setupProxy.*' },
-                { file: '**/src/setupTests.*' },
-            ],
-        },
-        logger: {
-            infrastructure: 'silent',
-        },
-    }),
-];
-if (eslintOptions) {
-    plugins.push(new eslint_webpack_plugin_1.default(eslintOptions));
-}
-if (stylelintOptions) {
-    plugins.push(new stylelint_webpack_plugin_1.default(stylelintOptions));
-}
-if (deployOptions) {
-    plugins.push(new HtmlWebpackDeployPlugin(deployOptions));
-}
-if (isProduction) {
-    plugins.push(new copy_webpack_plugin_1.default({
-        patterns: [
-            {
-                from: path_1.default.resolve('public'),
-                to: path_1.default.resolve('dist'),
-                filter: (p) => path_1.default.extname(p) !== '.html',
-            },
-        ],
-    }), new webpack_manifest_plugin_1.WebpackManifestPlugin({
-        fileName: 'asset-manifest.json',
-        publicPath: process.env.PUBLIC_URL,
-    }), new mini_css_extract_plugin_1.default({
-        filename: 'assets/styles/[name].[contenthash:8].css',
-        ignoreOrder: isProduction,
-    }));
-    if (bundleAnalyzerOptions) {
-        plugins.push(new webpack_bundle_analyzer_1.BundleAnalyzerPlugin(bundleAnalyzerOptions));
-    }
-}
-else {
-    plugins.push(new react_refresh_webpack_plugin_1.default({
-        overlay: {
-            entry: webpackDevClientEntry,
-            // The expected exports are slightly different from what the overlay exports,
-            // so an interop is included here to enable feedback on module-level errors.
-            module: reactRefreshOverlayEntry,
-            // Since we ship a custom dev client and overlay integration,
-            // the bundled socket handling logic can be eliminated.
-            sockIntegration: false,
-        },
-    }));
-}
 const configuration = {
-    entry: [path_1.default.resolve('src')],
+    entry: [path_1.default.resolve('src'), require.resolve('react-refresh/runtime')],
     module: {
         rules: [
             {
@@ -512,6 +439,7 @@ const configuration = {
             },
             {
                 test: /\.tsx?$/,
+                exclude: /(node_modules|bower_components)/,
                 use: [
                     'thread-loader',
                     {
@@ -534,14 +462,13 @@ const configuration = {
         buildDependencies: {
             config: [__filename],
         },
-        //cacheDirectory: path.resolve('node_modules', '.cache', 'webpack'),
     },
     output: {
         publicPath: process.env.PUBLIC_URL,
         path: path_1.default.resolve('dist'),
         filename: 'assets/js/[name].[contenthash:8].js',
     },
-    target: ['web', 'es5'],
+    target: isProduction ? 'browserslist' : 'web',
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.node'],
@@ -550,12 +477,93 @@ const configuration = {
             src: path_1.default.resolve('src'),
         },
     },
-    plugins,
+    plugins: [
+        new webpack_1.AutomaticPrefetchPlugin(),
+        new DotEnv({ systemvars: true }),
+        new webpack_1.IgnorePlugin({
+            resourceRegExp: /^\.\/locale$/,
+            contextRegExp: /moment$/,
+        }),
+        new html_webpack_plugin_1.default({
+            publicPath: process.env.PUBLIC_URL,
+            inject: true,
+            filename: 'index.html',
+            template: path_1.default.resolve('public', 'index.html'),
+            minify: true,
+        }),
+        new fork_ts_checker_webpack_plugin_1.default({
+            async: !isProduction,
+            typescript: {
+                configOverwrite: {
+                    compilerOptions: {
+                        sourceMap: !isProduction,
+                        skipLibCheck: true,
+                        inlineSourceMap: false,
+                        declarationMap: false,
+                        noEmit: true,
+                        incremental: true,
+                        tsBuildInfoFile: path_1.default.resolve(),
+                    },
+                },
+                context: path_1.default.resolve(),
+                diagnosticOptions: {
+                    syntactic: true,
+                },
+                mode: 'write-references',
+            },
+            issue: {
+                include: [
+                    { file: '../**/src/**/*.{ts,tsx}' },
+                    { file: '**/src/**/*.{ts,tsx}' },
+                ],
+                exclude: [
+                    { file: '**/src/**/__tests__/**' },
+                    { file: '**/src/**/?(*.){spec|test}.*' },
+                    { file: '**/src/setupProxy.*' },
+                    { file: '**/src/setupTests.*' },
+                ],
+            },
+            logger: {
+                infrastructure: 'silent',
+            },
+        }),
+        eslintOptions && new eslint_webpack_plugin_1.default(eslintOptions),
+        stylelintOptions && new stylelint_webpack_plugin_1.default(stylelintOptions),
+        deployOptions && new HtmlWebpackDeployPlugin(deployOptions),
+        !isProduction &&
+            new react_refresh_webpack_plugin_1.default({
+                overlay: false,
+            }),
+        isProduction &&
+            new copy_webpack_plugin_1.default({
+                patterns: [
+                    {
+                        from: path_1.default.resolve('public'),
+                        to: path_1.default.resolve('dist'),
+                        filter: (p) => path_1.default.extname(p) !== '.html',
+                    },
+                ],
+            }),
+        isProduction &&
+            new webpack_manifest_plugin_1.WebpackManifestPlugin({
+                fileName: 'asset-manifest.json',
+                publicPath: process.env.PUBLIC_URL,
+            }),
+        isProduction &&
+            new mini_css_extract_plugin_1.default({
+                filename: 'assets/styles/[name].[contenthash:8].css',
+                ignoreOrder: isProduction,
+            }),
+        isProduction &&
+            bundleAnalyzerOptions &&
+            new webpack_bundle_analyzer_1.BundleAnalyzerPlugin(bundleAnalyzerOptions),
+    ].filter(Boolean),
     optimization: {
+        runtimeChunk: 'single',
         minimize: isProduction,
-        minimizer: isProduction
-            ? [
-                new css_minimizer_webpack_plugin_1.default(),
+        minimizer: [
+            isProduction && new css_minimizer_webpack_plugin_1.default(),
+            isProduction &&
                 new terser_webpack_plugin_1.default({
                     exclude: [/\/npm/, /^npm/, /\/public/, /^public/],
                     parallel: true,
@@ -567,8 +575,7 @@ const configuration = {
                         },
                     },
                 }),
-            ]
-            : [],
+        ].filter(Boolean),
         splitChunks: {
             maxAsyncSize: 200000,
             maxInitialSize: 100000,
@@ -584,7 +591,7 @@ const configuration = {
     },
     stats: false,
     performance: false,
-    devtool: isProduction ? false : 'inline-source-map',
+    devtool: !isProduction && 'inline-source-map',
     mode: isProduction ? 'production' : 'development',
 };
 exports.ServerConfiguration = devServerOptions;

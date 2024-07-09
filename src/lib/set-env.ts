@@ -31,11 +31,14 @@ export function setEnv(isDev?: boolean): void {
   if (process.env.HOST === undefined) {
     process.env.HOST = '0.0.0.0';
   }
+  if (process.env.PORT === undefined) {
+    process.env.HOST = '3000';
+  }
   if (process.env.WDS_SOCKET_HOST === undefined) {
-    process.env.WDS_SOCKET_HOST = '';
+    process.env.WDS_SOCKET_HOST = process.env.HOST;
   }
   if (process.env.WDS_SOCKET_PORT === undefined) {
-    process.env.WDS_SOCKET_PORT = '';
+    process.env.WDS_SOCKET_PORT = process.env.PORT;
   }
 
   if (process.env.WDS_SOCKET_PATH === undefined) {
