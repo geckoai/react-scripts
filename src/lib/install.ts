@@ -7,7 +7,7 @@ import { spawn } from 'child_process';
  * @param projectName
  */
 export function install(
-  type: 'npm' | 'yarn',
+  type: 'pnpm' | 'npm' | 'yarn',
   projectName: string
 ): Promise<void> {
   return new Promise((r, j) => {

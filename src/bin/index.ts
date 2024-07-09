@@ -97,7 +97,7 @@ program
   .command('create <project-name>')
   .description('Create react app')
   .action((projectName: string) => {
-    const spinner = ora('Start download template.');
+    const spinner = ora('Start download template.').start();
     download(
       'geckoai/react-app-template',
       path.resolve(projectName),

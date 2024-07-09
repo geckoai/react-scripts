@@ -7,5 +7,5 @@ export function createDir(dir: string) {
     list.push(dir);
     dir = path.dirname(dir);
   }
-  list.reverse().forEach(x => fs.mkdirSync(x));
+  list.reverse().forEach((x) => fs.mkdirSync(x));
 }

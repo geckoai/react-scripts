@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/react-scripts",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -78,7 +78,7 @@
     "ip": "1.1.5",
     "mini-css-extract-plugin": "2.6.0",
     "moment": "2.30.1",
-    "ora": "^4.1.1",
+    "ora": "8.0.1",
     "postcss": "8.4.39",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-loader": "6.2.1",

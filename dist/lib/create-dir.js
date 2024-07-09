@@ -12,6 +12,6 @@ function createDir(dir) {
         list.push(dir);
         dir = path_1.default.dirname(dir);
     }
-    list.reverse().forEach(x => fs_1.default.mkdirSync(x));
+    list.reverse().forEach((x) => fs_1.default.mkdirSync(x));
 }
 exports.createDir = createDir;

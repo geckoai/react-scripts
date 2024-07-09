@@ -529,7 +529,7 @@ const configuration = {
         }),
         eslintOptions && new eslint_webpack_plugin_1.default(eslintOptions),
         stylelintOptions && new stylelint_webpack_plugin_1.default(stylelintOptions),
-        deployOptions && new HtmlWebpackDeployPlugin(deployOptions),
+        deployOptions && isProduction && new HtmlWebpackDeployPlugin(deployOptions),
         !isProduction &&
             new react_refresh_webpack_plugin_1.default({
                 overlay: false,
