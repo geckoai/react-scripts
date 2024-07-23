@@ -308,7 +308,9 @@ const getStyleLoaders = (isModule = false, importLoaders = 0) => {
     ];
 };
 const configuration = {
-    entry: [path_1.default.resolve('src'), require.resolve('react-refresh/runtime')],
+    entry: !isProduction
+        ? [path_1.default.resolve('src'), require.resolve('react-refresh/runtime')]
+        : [path_1.default.resolve('src')],
     module: {
         rules: [
             {

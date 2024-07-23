@@ -308,7 +308,9 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
 };
 
 const configuration: Configuration = {
-  entry: [path.resolve('src'), require.resolve('react-refresh/runtime')],
+  entry: !isProduction
+    ? [path.resolve('src'), require.resolve('react-refresh/runtime')]
+    : [path.resolve('src')],
   module: {
     rules: [
       {
@@ -384,6 +386,7 @@ const configuration: Configuration = {
               },
         ],
       },
+
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
         use: [
