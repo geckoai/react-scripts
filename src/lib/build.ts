@@ -24,9 +24,9 @@ import { Configuration, webpack } from 'webpack';
 import rimraf from 'rimraf';
 import path from 'path';
 import ora from 'ora';
-const spinner = ora('开始编译... \n').start();
 
 function buildRendererBundle(): Promise<void> {
+  const spinner = ora('[UI:Process] start build. \n').start();
   const { webpackRendererConfig } = require('../webpack.renderer.config');
   const compiler = webpack(webpackRendererConfig as Configuration);
   return new Promise((resolve, reject) => {
@@ -41,10 +41,10 @@ function buildRendererBundle(): Promise<void> {
 
     compiler.hooks.afterEmit.tap('ElectronRendererDone', () => {
       resolve();
-      spinner.succeed('渲染进程编译完成');
+      spinner.succeed('[UI:Process] finish.');
     });
     compiler.hooks.failed.tap('ElectronMainFailed', (params) => {
-      spinner.fail('渲染进程编译完成');
+      spinner.fail('[UI:Process] error.');
       console.log(params);
       reject();
     });
@@ -52,7 +52,7 @@ function buildRendererBundle(): Promise<void> {
 }
 
 function buildMainBundle(): Promise<any> {
-  spinner.succeed('开始编译主进程');
+  const spinner = ora('[Main:Process] start build. \n').start();
   return new Promise((r, j) => {
     const { mainConfig } = require('../webpack.main.config');
     const compiler = webpack(mainConfig);
@@ -65,11 +65,11 @@ function buildMainBundle(): Promise<any> {
       }
     });
     compiler.hooks.afterEmit.tap('ElectronMainDone', () => {
-      spinner.succeed('主进程编译完成');
+      spinner.succeed('[Main:Process] finish.');
       r(true);
     });
     compiler.hooks.failed.tap('ElectronMainFailed', (params) => {
-      spinner.fail('主进程编译失败');
+      spinner.fail('[Main:Process] error.');
       console.log(params);
       j();
     });
@@ -84,5 +84,3 @@ export function build(): void {
     console.log(err);
   });
 }
-
-build();

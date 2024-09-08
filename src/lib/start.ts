@@ -27,7 +27,6 @@ import chalk from 'chalk';
 import { clearConsole } from './clear-console';
 import ip from 'ip';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import * as process from 'node:process';
 const electron = require('electron');
 
 const isInteractive = process.stdout.isTTY;
@@ -94,14 +93,16 @@ function runRendererBundle(): Promise<void> {
   });
 
   return new Promise((resolve, reject) => {
-    server.startCallback(() => {
+    server.startCallback((err) => {
+      if (err) {
+        reject();
+      }
       if (isInteractive) {
         clearConsole();
       }
       console.log(chalk.cyan('Starting the development server...\n'));
       resolve();
     });
-    compiler.hooks.failed.tap('ElectronRendererError', () => reject());
   });
 }
 
@@ -111,11 +112,18 @@ function runMainBundle(): Promise<void> {
   return new Promise((resolve, reject) => {
     compiler.watch({}, (err, stats) => {
       if (err) {
-        throw err;
+        reject();
       }
-
-      if (stats && stats.hasErrors()) {
-        console.log(stats.toString());
+      if (stats && (stats.hasErrors() || stats.hasWarnings())) {
+        console.log(
+          stats.toString({
+            all: false,
+            errors: true,
+            warnings: true,
+            colors: true,
+          })
+        );
+        return;
       }
 
       if (mainProcess) {
@@ -134,14 +142,15 @@ function runMainBundle(): Promise<void> {
         // 清空进程
         mainProcess = null;
       }
+      resolve();
     });
-    compiler.hooks.done.tap('ElectronMainDone', () => resolve());
-    compiler.hooks.failed.tap('ElectronMainFailed', () => reject());
   });
 }
 
 function startElectron(): void {
-  mainProcess = spawn(electron, [path.resolve('dist', 'main', 'main.js')]);
+  mainProcess = spawn(electron, [
+    path.resolve('node_modules', '.electron', 'main.js'),
+  ]);
   mainProcess.stdout.pipe(process.stdout);
   mainProcess.on('close', () => {
     if (!electronRestart) {

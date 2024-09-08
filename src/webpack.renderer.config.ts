@@ -197,7 +197,13 @@ let deployOptions = null;
 let alias = null;
 
 if (fs.existsSync(path.resolve('project.config.js'))) {
-  const { renderer } = require(path.resolve('project.config.js'));
+  const config = require(path.resolve('project.config.js'));
+  const renderer = config.renderer;
+  alias = {
+    ...config?.alias,
+    ...config?.renderer?.alias,
+  };
+
   if (renderer.webpack) {
     customWebpackConfig = renderer.webpack;
   }
@@ -229,10 +235,6 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
     }
   }
 
-  if (renderer.alias) {
-    alias = renderer.alias;
-  }
-
   if (renderer.eslint) {
     if (typeof renderer.eslint !== 'boolean') {
       eslintOptions = Object.assign(eslintOptions, renderer.eslint);
@@ -254,7 +256,7 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
     }
 
     if (devServerOptions.port && devServerOptions.port !== process.env.PORT) {
-      process.env.PORT = devServerOptions.host;
+      process.env.PORT = devServerOptions.port as any;
     }
   }
 
@@ -530,6 +532,7 @@ const configuration: Configuration = {
       },
       logger: {
         infrastructure: 'silent',
+        devServer: true,
       },
     }),
     eslintOptions && new ESLintWebpackPlugin(eslintOptions),

@@ -204,7 +204,12 @@ let bundleAnalyzerOptions = {};
 let deployOptions = null;
 let alias = null;
 if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
-    const { renderer } = require(path_1.default.resolve('project.config.js'));
+    const config = require(path_1.default.resolve('project.config.js'));
+    const renderer = config.renderer;
+    alias = {
+        ...config?.alias,
+        ...config?.renderer?.alias,
+    };
     if (renderer.webpack) {
         customWebpackConfig = renderer.webpack;
     }
@@ -234,9 +239,6 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
             stylelintOptions = null;
         }
     }
-    if (renderer.alias) {
-        alias = renderer.alias;
-    }
     if (renderer.eslint) {
         if (typeof renderer.eslint !== 'boolean') {
             eslintOptions = Object.assign(eslintOptions, renderer.eslint);
@@ -256,7 +258,7 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
             process.env.HOST = devServerOptions.host;
         }
         if (devServerOptions.port && devServerOptions.port !== process.env.PORT) {
-            process.env.PORT = devServerOptions.host;
+            process.env.PORT = devServerOptions.port;
         }
     }
     if (renderer.bundleAnalyzer) {
@@ -528,6 +530,7 @@ const configuration = {
             },
             logger: {
                 infrastructure: 'silent',
+                devServer: true,
             },
         }),
         eslintOptions && new eslint_webpack_plugin_1.default(eslintOptions),
