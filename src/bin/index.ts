@@ -98,7 +98,7 @@ program
   .action((projectName: string) => {
     const spinner = ora('Start download template.').start();
     download(
-      'geckoai/react-app-template',
+      'geckoai/electron-react-app-template',
       path.resolve(projectName),
       async (err: Error) => {
         if (err) {

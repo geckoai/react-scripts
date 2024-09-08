@@ -84,7 +84,7 @@ commander_1.program
     .description('Create react app')
     .action((projectName) => {
     const spinner = (0, ora_1.default)('Start download template.').start();
-    (0, download_git_repo_1.default)('geckoai/react-app-template', path_1.default.resolve(projectName), async (err) => {
+    (0, download_git_repo_1.default)('geckoai/electron-react-app-template', path_1.default.resolve(projectName), async (err) => {
         if (err) {
             spinner.fail(err.message);
             throw err;
