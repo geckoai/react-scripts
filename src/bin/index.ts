@@ -46,7 +46,6 @@ program
   .option('-M, --max_old_space_size [size]', 'memory limit', '4096')
   .action((option: { max_old_space_size: string }) => {
     expand(dotenv.config());
-
     setEnv(true);
     const size = Number(option.max_old_space_size);
     if (isNaN(size)) {

@@ -26,74 +26,138 @@ import path from 'path';
 import chalk from 'chalk';
 import { clearConsole } from './clear-console';
 import ip from 'ip';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import * as process from 'node:process';
+const electron = require('electron');
 
 const isInteractive = process.stdout.isTTY;
 
-const openBrowser = require('react-dev-utils/openBrowser');
+let mainProcess: ChildProcessWithoutNullStreams | null;
+let electronRestart = false;
 
-const { webpackConfig, ServerConfiguration } = require('../webpack.config');
-const compiler = webpack(webpackConfig as Configuration);
-compiler.hooks.invalid.tap('invalid', () => {
-  if (isInteractive) {
-    clearConsole();
-  }
-});
-compiler.hooks.beforeCompile.tap('beforeCompile', () => {
-  if (isInteractive) {
-    clearConsole();
-    console.log('Compiling...');
-  }
-});
+function runRendererBundle(): Promise<void> {
+  const {
+    webpackRendererConfig,
+    ServerConfiguration,
+  } = require('../webpack.renderer.config');
 
-const server = new Server(ServerConfiguration, compiler);
-
-const port = server.options.port || 3000;
-server.options.open = false;
-const protocol: string =
-  (server.options.server || ({ type: 'http' } as any)).type || 'http';
-const address = ip.address();
-
-const PACK: { name: string } = require(path.resolve('package.json'));
-
-compiler.hooks.done.tap('done', (stats) => {
-  if (isInteractive) {
-    clearConsole();
-    if (!stats.hasErrors() && !stats.hasWarnings()) {
-      console.log(chalk.green('Compiled successfully!'));
-      console.log(`You can now view ${PACK.name} in the browser.\n`);
-      console.log(`Local:            ${protocol}://localhost:${port}`);
-      console.log(`On Your Network:  ${protocol}://${address}:${port}\n`);
-      console.log('Note that the development build is not optimized.');
-      console.log(
-        `To create a production build, use ${chalk.cyan('yarn build.')}`
-      );
-    } else {
-      console.log(
-        stats.toString({
-          all: false,
-          errors: true,
-          warnings: true,
-          colors: true,
-        })
-      );
+  const compiler = webpack(webpackRendererConfig as Configuration);
+  compiler.hooks.invalid.tap('invalid', () => {
+    if (isInteractive) {
+      clearConsole();
     }
-  }
-});
+  });
+  compiler.hooks.beforeCompile.tap('beforeCompile', () => {
+    if (isInteractive) {
+      clearConsole();
+      console.log('Compiling...');
+    }
+  });
+  const server = new Server(ServerConfiguration, compiler);
+  const port = server.options.port || 3000;
+  server.options.open = false;
+  const protocol: string =
+    (server.options.server || ({ type: 'http' } as any)).type || 'http';
+  const address = ip.address();
+  const PACK: { name: string } = require(path.resolve('package.json'));
+  compiler.hooks.done.tap('ElectronRendererDone', (stats) => {
+    if (isInteractive) {
+      clearConsole();
+      if (!stats.hasErrors() && !stats.hasWarnings()) {
+        console.log(chalk.green('Compiled successfully!'));
+        console.log(`You can now view ${PACK.name} in the browser.\n`);
+        console.log(`Local:            ${protocol}://localhost:${port}`);
+        console.log(`On Your Network:  ${protocol}://${address}:${port}\n`);
+        console.log('Note that the development build is not optimized.');
+        console.log(
+          `To create a production build, use ${chalk.cyan('yarn build.')}`
+        );
+      } else {
+        console.log(
+          stats.toString({
+            all: false,
+            errors: true,
+            warnings: true,
+            colors: true,
+          })
+        );
+      }
+    }
+  });
+  process.on('SIGINT', function () {
+    server.stopCallback();
+    process.exit();
+  });
+  process.on('SIGTERM', function () {
+    server.stopCallback();
+    process.exit();
+  });
 
-server.startCallback(() => {
-  if (isInteractive) {
-    clearConsole();
-  }
-  console.log(chalk.cyan('Starting the development server...\n'));
-  openBrowser(`${protocol}://localhost:${port}`);
-});
+  return new Promise((resolve, reject) => {
+    server.startCallback(() => {
+      if (isInteractive) {
+        clearConsole();
+      }
+      console.log(chalk.cyan('Starting the development server...\n'));
+      resolve();
+    });
+    compiler.hooks.failed.tap('ElectronRendererError', () => reject());
+  });
+}
 
-process.on('SIGINT', function () {
-  server.stopCallback();
-  process.exit();
-});
+function runMainBundle(): Promise<void> {
+  const { mainConfig } = require('../webpack.main.config');
+  const compiler = webpack(mainConfig);
+  return new Promise((resolve, reject) => {
+    compiler.watch({}, (err, stats) => {
+      if (err) {
+        throw err;
+      }
 
-process.on('SIGTERM', function () {
-  server.stopCallback();
-  process.exit();
-});
+      if (stats && stats.hasErrors()) {
+        console.log(stats.toString());
+      }
+
+      if (mainProcess) {
+        electronRestart = true;
+        mainProcess.removeAllListeners('close');
+        // 监听主进程关闭事件
+        mainProcess.once('close', () => {
+          // 重启Electron
+          startElectron();
+          electronRestart = false;
+        });
+        // 杀死electron进程
+        if (mainProcess.pid) {
+          process.kill(mainProcess.pid);
+        }
+        // 清空进程
+        mainProcess = null;
+      }
+    });
+    compiler.hooks.done.tap('ElectronMainDone', () => resolve());
+    compiler.hooks.failed.tap('ElectronMainFailed', () => reject());
+  });
+}
+
+function startElectron(): void {
+  mainProcess = spawn(electron, [path.resolve('dist', 'main', 'main.js')]);
+  mainProcess.stdout.pipe(process.stdout);
+  mainProcess.on('close', () => {
+    if (!electronRestart) {
+      process.exit();
+    }
+  });
+}
+
+function start(): void {
+  Promise.all([runMainBundle(), runRendererBundle()])
+    .then(() => {
+      startElectron();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+start();

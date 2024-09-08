@@ -57,6 +57,8 @@ const redirectServedPath = require('react-dev-utils/redirectServedPathMiddleware
 const evalSourceMapMiddleware = require('react-dev-utils/evalSourceMapMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 
+const workdir = path.resolve('src', 'renderer');
+
 const host = process.env.HOST;
 const port = process.env.PORT;
 const sockHost = process.env.WDS_SOCKET_HOST;
@@ -195,16 +197,16 @@ let deployOptions = null;
 let alias = null;
 
 if (fs.existsSync(path.resolve('project.config.js'))) {
-  const config: any = require(path.resolve('project.config.js'));
-  if (config.webpack) {
-    customWebpackConfig = config.webpack;
+  const { renderer } = require(path.resolve('project.config.js'));
+  if (renderer.webpack) {
+    customWebpackConfig = renderer.webpack;
   }
-  if (config.babel) {
-    babelLoaderOptions = Object.assign(babelLoaderOptions, config.babel);
+  if (renderer.babel) {
+    babelLoaderOptions = Object.assign(babelLoaderOptions, renderer.babel);
   }
 
-  if (config.style) {
-    const { sass, less, css, postcss } = config.style;
+  if (renderer.style) {
+    const { sass, less, css, postcss, lint } = renderer.style;
     if (css) {
       cssLoaderOptions = Object.assign(cssLoaderOptions, css);
     }
@@ -217,36 +219,36 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
     if (postcss) {
       postCssOptions = Object.assign(postCssOptions, postcss);
     }
+
+    if (lint) {
+      if (typeof lint !== 'boolean') {
+        stylelintOptions = Object.assign(stylelintOptions, lint);
+      }
+    } else {
+      stylelintOptions = null;
+    }
   }
 
-  if (config.alias) {
-    alias = config.alias;
+  if (renderer.alias) {
+    alias = renderer.alias;
   }
 
-  if (config.eslint) {
-    if (typeof config.eslint !== 'boolean') {
-      eslintOptions = Object.assign(eslintOptions, config.eslint);
+  if (renderer.eslint) {
+    if (typeof renderer.eslint !== 'boolean') {
+      eslintOptions = Object.assign(eslintOptions, renderer.eslint);
     }
   } else {
     eslintOptions = null;
   }
 
-  if (config.styleLint) {
-    if (typeof config.styleLint !== 'boolean') {
-      stylelintOptions = Object.assign(stylelintOptions, config.styleLint);
-    }
-  } else {
-    stylelintOptions = null;
-  }
-
-  if (config.file) {
-    if (typeof config.file !== 'boolean') {
-      fileLoaderOptions = Object.assign(fileLoaderOptions, config.file);
+  if (renderer.file) {
+    if (typeof renderer.file !== 'boolean') {
+      fileLoaderOptions = Object.assign(fileLoaderOptions, renderer.file);
     }
   }
 
-  if (config.devServer) {
-    devServerOptions = Object.assign(devServerOptions, config.devServer);
+  if (renderer.devServer) {
+    devServerOptions = Object.assign(devServerOptions, renderer.devServer);
     if (devServerOptions.host && devServerOptions.host !== process.env.HOST) {
       process.env.HOST = devServerOptions.host;
     }
@@ -256,14 +258,14 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
     }
   }
 
-  if (config.bundleAnalyzer) {
-    bundleAnalyzerOptions = config.bundleAnalyzer;
+  if (renderer.bundleAnalyzer) {
+    bundleAnalyzerOptions = renderer.bundleAnalyzer;
   } else {
     bundleAnalyzerOptions = null;
   }
 
-  if (config.deployOptions) {
-    deployOptions = config.deployOptions;
+  if (renderer.deployOptions) {
+    deployOptions = renderer.deployOptions;
   } else {
     deployOptions = null;
   }
@@ -309,8 +311,8 @@ const getStyleLoaders = (isModule = false, importLoaders = 0): any => {
 
 const configuration: Configuration = {
   entry: !isProduction
-    ? [path.resolve('src'), require.resolve('react-refresh/runtime')]
-    : [path.resolve('src')],
+    ? [workdir, require.resolve('react-refresh/runtime')]
+    : [workdir],
   module: {
     rules: [
       {
@@ -468,10 +470,10 @@ const configuration: Configuration = {
   },
   output: {
     publicPath: process.env.PUBLIC_URL,
-    path: path.resolve('dist'),
+    path: path.resolve('dist', 'renderer'),
     filename: 'assets/js/[name].[contenthash:8].js',
   },
-  target: isProduction ? 'browserslist' : 'web',
+  target: 'electron23.3-renderer',
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.node'],
@@ -516,8 +518,8 @@ const configuration: Configuration = {
       },
       issue: {
         include: [
-          { file: '../**/src/**/*.{ts,tsx}' },
-          { file: '**/src/**/*.{ts,tsx}' },
+          { file: '../**/src/renderer/**/*.{ts,tsx}' },
+          { file: '**/src/renderer/**/*.{ts,tsx}' },
         ],
         exclude: [
           { file: '**/src/**/__tests__/**' },
@@ -542,7 +544,7 @@ const configuration: Configuration = {
         patterns: [
           {
             from: path.resolve('public'),
-            to: path.resolve('dist'),
+            to: path.resolve('dist', 'renderer'),
             filter: (p: any): boolean => path.extname(p) !== '.html',
           },
         ],
@@ -596,10 +598,11 @@ const configuration: Configuration = {
   performance: false,
   devtool: !isProduction && 'inline-source-map',
   mode: isProduction ? 'production' : 'development',
+  node: { __dirname: false, __filename: false, global: true },
 };
 
 export const ServerConfiguration = devServerOptions;
 
-export const webpackConfig: Configuration = customWebpackConfig
+export const webpackRendererConfig: Configuration = customWebpackConfig
   ? merge(configuration, customWebpackConfig)
   : configuration;

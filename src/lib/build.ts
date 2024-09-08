@@ -23,25 +23,66 @@
 import { Configuration, webpack } from 'webpack';
 import rimraf from 'rimraf';
 import path from 'path';
+import ora from 'ora';
+const spinner = ora('开始编译... \n').start();
+
+function buildRendererBundle(): Promise<void> {
+  const { webpackRendererConfig } = require('../webpack.renderer.config');
+  const compiler = webpack(webpackRendererConfig as Configuration);
+  return new Promise((resolve, reject) => {
+    compiler.run((err, status) => {
+      if (err) {
+        reject(err);
+      }
+      if (status && status.hasErrors()) {
+        console.log(status.toString());
+      }
+    });
+
+    compiler.hooks.afterEmit.tap('ElectronRendererDone', () => {
+      resolve();
+      spinner.succeed('渲染进程编译完成');
+    });
+    compiler.hooks.failed.tap('ElectronMainFailed', (params) => {
+      spinner.fail('渲染进程编译完成');
+      console.log(params);
+      reject();
+    });
+  });
+}
+
+function buildMainBundle(): Promise<any> {
+  spinner.succeed('开始编译主进程');
+  return new Promise((r, j) => {
+    const { mainConfig } = require('../webpack.main.config');
+    const compiler = webpack(mainConfig);
+    compiler.run((err, stats) => {
+      if (err) {
+        j(err);
+      }
+      if (stats && stats.hasErrors()) {
+        console.log(stats.toString());
+      }
+    });
+    compiler.hooks.afterEmit.tap('ElectronMainDone', () => {
+      spinner.succeed('主进程编译完成');
+      r(true);
+    });
+    compiler.hooks.failed.tap('ElectronMainFailed', (params) => {
+      spinner.fail('主进程编译失败');
+      console.log(params);
+      j();
+    });
+  });
+}
 /**
  * build
  */
 export function build(): void {
   rimraf.sync(path.resolve('dist'));
-  const { webpackConfig } = require('../webpack.config');
-  const compiler = webpack(webpackConfig as Configuration);
-  compiler.run((err, status) => {
-    if (err) {
-      console.log(err);
-    } else if (status) {
-      console.log(
-        status.toString({
-          all: false,
-          builtAt: true,
-          warnings: true,
-          errors: true,
-        })
-      );
-    }
+  Promise.all([buildMainBundle(), buildRendererBundle()]).catch((err) => {
+    console.log(err);
   });
 }
+
+build();
