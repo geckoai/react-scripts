@@ -25,7 +25,6 @@
  */
 export function setEnv(): void {
   process.env.PUBLIC_URL = process.env.PUBLIC_URL ?? '/';
-  process.env.APP_RUNTIME_ENV = process.env.APP_RUNTIME_ENV ?? 'electron';
   process.env.MAX_OLD_SPACE_SIZE = process.env.MAX_OLD_SPACE_SIZE ?? '4096';
   process.env.HOST = process.env.HOST ?? '127.0.0.1';
   process.env.PORT = process.env.PORT ?? '3000';
