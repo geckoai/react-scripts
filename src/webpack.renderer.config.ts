@@ -532,7 +532,6 @@ const configuration: Configuration = {
       },
       logger: {
         infrastructure: 'silent',
-        devServer: true,
       },
     }),
     eslintOptions && new ESLintWebpackPlugin(eslintOptions),

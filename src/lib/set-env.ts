@@ -53,5 +53,6 @@ export function setEnv(isDev?: boolean): void {
     process.env.MAX_OLD_SPACE_SIZE = '4096';
   }
 
-  process.env.NODE_ENV = isDev ? 'development' : 'production';
+  process.env.NODE_ENV =
+    process.env.NODE_ENV ?? (isDev ? 'development' : 'production');
 }

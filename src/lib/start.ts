@@ -83,6 +83,7 @@ function runRendererBundle(): Promise<void> {
       }
     }
   });
+
   process.on('SIGINT', function () {
     server.stopCallback();
     process.exit();
