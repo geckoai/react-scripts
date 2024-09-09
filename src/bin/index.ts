@@ -24,18 +24,23 @@
 import 'reflect-metadata';
 import ora from 'ora';
 import { spawn } from 'child_process';
-import { program } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
 import inquirer from 'inquirer';
-import download from 'download-git-repo';
+import { downloadTemplate } from 'giget';
 import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
 import { swaggerGenerator } from '../lib/swagger-generator';
 import dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
+import fs from 'fs';
+import validate from 'validate-npm-package-name';
+
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
+
+const program = new Command();
 
 program.version(PACKAGE.version as string, '-v, --version');
 
@@ -92,40 +97,92 @@ program
 program
   .command('create <project-name>')
   .description('Create react app')
-  .action((projectName: string) => {
+  .action(async (projectName: string) => {
     const spinner = ora('Start download template.').start();
-    download(
-      'geckoai/electron-react-app-template',
-      path.resolve(projectName),
-      async (err: Error) => {
-        if (err) {
-          spinner.fail(err.message);
-          throw err;
-        }
-        spinner.succeed('Download template success!');
-        const { isInstall } = await inquirer.prompt<{ isInstall: boolean }>({
-          type: 'confirm',
-          name: 'isInstall',
-          message: 'Is install dependencies ?',
-          default: true,
+    try {
+      const { warnings, validForNewPackages } = validate(projectName);
+      if (warnings?.length) {
+        warnings.forEach((x) => {
+          console.warn(x);
         });
-        if (isInstall) {
-          const { select } = await inquirer.prompt<{ select: string }>({
-            type: 'list',
-            message: 'Select package manager.',
-            choices: ['use yarn', 'use npm'],
-            default: 0,
-            name: 'select',
-          });
-          try {
-            await install(select === 'use yarn' ? 'yarn' : 'npm', projectName);
-            spinner.succeed('Install success.');
-          } catch (err) {
-            spinner.fail('Install fail.');
-          }
-        }
       }
-    );
+
+      await downloadTemplate('github:geckoai/electron-react-app-template', {
+        dir: path.resolve(projectName),
+      });
+      spinner.succeed('Download template success!');
+
+      const file = fs.readFileSync(
+        path.resolve(projectName, 'package.json'),
+        'utf8'
+      );
+
+      const json = JSON.parse(file);
+      json.name = projectName;
+
+      const { description } = await inquirer.prompt({
+        type: 'input',
+        name: 'description',
+        message: 'Please enter project description!',
+        default: '',
+      });
+      json.name = description;
+
+      const { author } = await inquirer.prompt({
+        type: 'input',
+        name: 'author',
+        message: 'Please enter project author!',
+        default: 'mingqi-tech',
+      });
+      json.author = author;
+
+      const { productName } = await inquirer.prompt({
+        type: 'input',
+        name: 'productName',
+        message: 'Please enter project productName!',
+        default: 'App Name',
+      });
+      json.build.productName = productName;
+
+      const { appId } = await inquirer.prompt({
+        type: 'input',
+        name: 'appId',
+        message: 'Please enter project appId!',
+        default: 'com.mininglamp.electron.app',
+      });
+      json.build.appId = appId;
+
+      const { copyright } = await inquirer.prompt({
+        type: 'input',
+        name: 'copyright',
+        message: 'Please enter project copyright!',
+        default: 'Copyright © 2020 mininglamp',
+      });
+      json.build.copyright = copyright;
+
+      fs.writeFileSync(
+        path.resolve(projectName, 'package.json'),
+        JSON.stringify(json, null, 2)
+      );
+
+      const { isInstall } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'isInstall',
+        message: 'Is install dependencies ?',
+        default: true,
+      });
+
+      if (isInstall) {
+        await install('pnpm', projectName);
+      } else {
+        console.log(chalk.green('\nTo get started:'));
+        console.log(chalk.yellow(`cd ${projectName}`));
+        console.log(chalk.yellow('pnpm install'));
+        console.log(chalk.yellow('pnpm start'));
+      }
+    } catch (err: any) {
+      spinner.fail(err?.message);
+    }
   });
 
 program.parse(process.argv);

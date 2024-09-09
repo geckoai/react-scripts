@@ -11,11 +11,7 @@ export function install(
   projectName: string
 ): Promise<void> {
   return new Promise((r, j) => {
-    if (process.platform === 'win32') {
-      type += '.cmd';
-    }
-
-    const npmi = spawn(type, ['install'], {
+    const npmi = spawn(type + '.cmd', ['install'], {
       cwd: path.resolve(projectName),
       stdio: 'inherit',
       env: process.env,
@@ -23,12 +19,13 @@ export function install(
 
     npmi.on('close', () => {
       r();
-      console.log('\nTo get started:\n');
+      console.log(chalk.green('\nTo get started:'));
       console.log(chalk.yellow(`cd ${projectName}`));
-      console.log(chalk.yellow(`${type.replace('.cmd', '')} start`));
+      console.log(chalk.yellow(`${type} start`));
     });
 
     npmi.on('error', (err: Error) => {
+      console.log(err);
       j(err);
     });
   });

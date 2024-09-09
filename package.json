@@ -1,11 +1,11 @@
 {
   "name": "@geckoai/electron-react-scripts",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "electron-react-scripts",
   "main": "dist",
   "types": "dist/types",
   "bin": {
-    "react-scripts": "./dist/bin/index.js"
+    "electron-react-scripts": "./dist/bin/index.js"
   },
   "scripts": {
     "build:clean": "rimraf dist && rimraf docs",
@@ -41,7 +41,8 @@
     "ts-node": "^10.7.0",
     "typedoc": "^0.22.13",
     "web-vitals": "^2.1.4",
-    "electron": "23.3.13"
+    "electron": "23.3.13",
+    "@types/validate-npm-package-name": "4.0.2"
   },
   "dependencies": {
     "@babel/runtime-corejs2": "^7.18.9",
@@ -63,7 +64,8 @@
     "dotenv": "16.0.0",
     "dotenv-expand": "^11.0.6",
     "dotenv-webpack": "8.1.0",
-    "download-git-repo": "3.0.2",
+    "giget": "1.2.3",
+    "validate-npm-package-name": "5.0.1",
     "eslint": "8.57.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-config-react-app": "7.0.1",
