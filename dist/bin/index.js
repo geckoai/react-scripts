@@ -32,23 +32,24 @@ const commander_1 = require("commander");
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const inquirer_1 = __importDefault(require("inquirer"));
-const download_git_repo_1 = __importDefault(require("download-git-repo"));
 const build_1 = require("../lib/build");
 const set_env_1 = require("../lib/set-env");
 const install_1 = require("../lib/install");
 const swagger_generator_1 = require("../lib/swagger-generator");
 const dotenv_1 = __importDefault(require("dotenv"));
 const dotenv_expand_1 = require("dotenv-expand");
+const giget_1 = require("giget");
+const fs_1 = __importDefault(require("fs"));
 const PACKAGE = require(path_1.default.join(__dirname, '../', '../', 'package.json'));
-commander_1.program.version(PACKAGE.version, '-v, --version');
-commander_1.program
+const program = new commander_1.Command();
+program.version(PACKAGE.version, '-v, --version');
+program
     .command('start')
     .description('Start react app')
-    .option('-M, --max_old_space_size [size]', 'memory limit', '4096')
-    .action((option) => {
+    .action(() => {
     (0, dotenv_expand_1.expand)(dotenv_1.default.config());
-    (0, set_env_1.setEnv)(true);
-    const size = Number(option.max_old_space_size);
+    (0, set_env_1.setEnv)();
+    const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
         throw new TypeError('The option "max_old_space_size" argument is a number type.');
     }
@@ -59,19 +60,19 @@ commander_1.program
         throw new TypeError('The option "max_old_space_size" argument must be multiple of 1024.');
     }
     (0, child_process_1.spawn)('node', [
-        `--max_old_space_size=${size}`,
+        `--max_old_space_size=${process.env.MAX_OLD_SPACE_SIZE}`,
         path_1.default.join(__dirname, '../', 'lib', 'start.js'),
     ], {
         stdio: 'inherit',
     });
 });
-commander_1.program
+program
     .command('swagger-generator')
     .description('Build swagger docs')
     .action(async () => {
     await (0, swagger_generator_1.swaggerGenerator)();
 });
-commander_1.program
+program
     .command('build')
     .description('Build react app')
     .action(() => {
@@ -79,17 +80,32 @@ commander_1.program
     (0, set_env_1.setEnv)();
     (0, build_1.build)();
 });
-commander_1.program
+program
     .command('create <project-name>')
     .description('Create react app')
-    .action((projectName) => {
+    .action(async (projectName) => {
     const spinner = (0, ora_1.default)('Start download template.').start();
-    (0, download_git_repo_1.default)('geckoai/react-app-template', path_1.default.resolve(projectName), async (err) => {
-        if (err) {
-            spinner.fail(err.message);
-            throw err;
-        }
+    try {
+        await (0, giget_1.downloadTemplate)('git:geckoai/react-app-template');
         spinner.succeed('Download template success!');
+        const file = fs_1.default.readFileSync(path_1.default.resolve(projectName, 'package.json'), 'utf8');
+        const json = JSON.parse(file);
+        json.name = projectName;
+        const { description } = await inquirer_1.default.prompt({
+            type: 'input',
+            name: 'description',
+            message: 'Please enter project description!',
+            default: '',
+        });
+        json.name = description;
+        const { author } = await inquirer_1.default.prompt({
+            type: 'input',
+            name: 'author',
+            message: 'Please enter project author!',
+            default: 'mingqi-tech',
+        });
+        json.author = author;
+        fs_1.default.writeFileSync(path_1.default.resolve(projectName, 'package.json'), JSON.stringify(json, null, 2));
         const { isInstall } = await inquirer_1.default.prompt({
             type: 'confirm',
             name: 'isInstall',
@@ -97,26 +113,22 @@ commander_1.program
             default: true,
         });
         if (isInstall) {
-            const { select } = await inquirer_1.default.prompt({
-                type: 'list',
-                message: 'Select package manager.',
-                choices: ['use yarn', 'use npm'],
-                default: 0,
-                name: 'select',
-            });
-            try {
-                await (0, install_1.install)(select === 'use yarn' ? 'yarn' : 'npm', projectName);
-                spinner.succeed('Install success.');
-            }
-            catch (err) {
-                spinner.fail('Install fail.');
-            }
+            await (0, install_1.install)('pnpm', projectName);
         }
-    });
+        else {
+            console.log(chalk_1.default.green('\nTo get started:'));
+            console.log(chalk_1.default.yellow(`cd ${projectName}`));
+            console.log(chalk_1.default.yellow('pnpm install'));
+            console.log(chalk_1.default.yellow('pnpm start'));
+        }
+    }
+    catch (err) {
+        spinner.fail(err?.message);
+    }
 });
-commander_1.program.parse(process.argv);
+program.parse(process.argv);
 if (process.argv.length <= 2) {
-    commander_1.program.outputHelp((cb) => {
+    program.outputHelp((cb) => {
         return chalk_1.default.green(cb);
     });
 }

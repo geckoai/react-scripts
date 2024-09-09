@@ -14,21 +14,19 @@ const child_process_1 = require("child_process");
  */
 function install(type, projectName) {
     return new Promise((r, j) => {
-        if (process.platform === 'win32') {
-            type += '.cmd';
-        }
-        const npmi = (0, child_process_1.spawn)(type, ['install'], {
+        const npmi = (0, child_process_1.spawn)(type + '.cmd', ['install'], {
             cwd: path_1.default.resolve(projectName),
             stdio: 'inherit',
             env: process.env,
         });
         npmi.on('close', () => {
             r();
-            console.log('\nTo get started:\n');
+            console.log(chalk_1.default.green('\nTo get started:'));
             console.log(chalk_1.default.yellow(`cd ${projectName}`));
-            console.log(chalk_1.default.yellow(`${type.replace('.cmd', '')} start`));
+            console.log(chalk_1.default.yellow(`${type} start`));
         });
         npmi.on('error', (err) => {
+            console.log(err);
             j(err);
         });
     });
