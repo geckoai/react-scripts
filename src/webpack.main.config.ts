@@ -1,5 +1,5 @@
 import { Configuration } from 'webpack';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+// import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import path from 'path';
 import fs from 'fs';
 import { merge } from 'webpack-merge';
@@ -45,36 +45,42 @@ export const config: Configuration = {
         use: [
           {
             loader: 'ts-loader',
-            options: tsLoaderOptions,
+            options: {
+              ...tsLoaderOptions,
+              transpileOnly: true,
+            },
           },
         ],
       },
     ],
   },
-  plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      typescript: {
-        diagnosticOptions: {
-          syntactic: true,
-        },
-        mode: 'write-references',
-      },
-      async: !isProduction,
-      logger: {
-        infrastructure: 'silent',
-      },
-      issue: {
-        include: [
-          { file: '../**/src/main/**/*.ts' },
-          { file: '**/src/main/**/*.ts' },
-        ],
-        exclude: [
-          { file: '**/src/**/__tests__/**' },
-          { file: '**/src/**/?(*.){spec|test}.*' },
-        ],
-      },
-    }),
-  ],
+  // plugins: [
+  //   new ForkTsCheckerWebpackPlugin({
+  //     typescript: {
+  //       configOverwrite: {
+  //         include: ['src/main'],
+  //       },
+  //       diagnosticOptions: {
+  //         syntactic: true,
+  //       },
+  //       mode: 'write-references',
+  //     },
+  //     async: !isProduction,
+  //     logger: {
+  //       infrastructure: 'silent',
+  //     },
+  //     issue: {
+  //       include: [
+  //         { file: '../**/src/main/**/*.ts' },
+  //         { file: '**/src/main/**/*.ts' },
+  //       ],
+  //       exclude: [
+  //         { file: '**/src/**/__tests__/**' },
+  //         { file: '**/src/**/?(*.){spec|test}.*' },
+  //       ],
+  //     },
+  //   }),
+  // ],
   resolve: {
     extensions: ['.ts', '.js', '.json', '.node'],
     alias: { ...alias },

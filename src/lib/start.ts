@@ -28,6 +28,7 @@ import { clearConsole } from './clear-console';
 import ip from 'ip';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 const electron = require('electron');
+const openBrowser = require('react-dev-utils/openBrowser');
 
 const isInteractive = process.stdout.isTTY;
 
@@ -102,12 +103,18 @@ function runRendererBundle(): Promise<void> {
         clearConsole();
       }
       console.log(chalk.cyan('Starting the development server...\n'));
+      if (process.env.APP_RUNTIME_ENV === 'web') {
+        openBrowser(`${protocol}://localhost:${port}`);
+      }
       resolve();
     });
   });
 }
 
 function runMainBundle(): Promise<void> {
+  if (process.env.APP_RUNTIME_ENV === 'web') {
+    return Promise.resolve();
+  }
   const { mainConfig } = require('../webpack.main.config');
   const compiler = webpack(mainConfig);
   return new Promise((resolve, reject) => {
@@ -149,6 +156,9 @@ function runMainBundle(): Promise<void> {
 }
 
 function startElectron(): void {
+  if (process.env.APP_RUNTIME_ENV === 'web') {
+    return;
+  }
   mainProcess = spawn(electron, [
     path.resolve('node_modules', '.electron', 'main.js'),
   ]);

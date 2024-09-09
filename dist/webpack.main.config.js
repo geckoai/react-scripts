@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainConfig = exports.config = void 0;
-const fork_ts_checker_webpack_plugin_1 = __importDefault(require("fork-ts-checker-webpack-plugin"));
+// import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const webpack_merge_1 = require("webpack-merge");
@@ -44,36 +44,42 @@ exports.config = {
                 use: [
                     {
                         loader: 'ts-loader',
-                        options: tsLoaderOptions,
+                        options: {
+                            ...tsLoaderOptions,
+                            transpileOnly: true,
+                        },
                     },
                 ],
             },
         ],
     },
-    plugins: [
-        new fork_ts_checker_webpack_plugin_1.default({
-            typescript: {
-                diagnosticOptions: {
-                    syntactic: true,
-                },
-                mode: 'write-references',
-            },
-            async: !isProduction,
-            logger: {
-                infrastructure: 'silent',
-            },
-            issue: {
-                include: [
-                    { file: '../**/src/main/**/*.ts' },
-                    { file: '**/src/main/**/*.ts' },
-                ],
-                exclude: [
-                    { file: '**/src/**/__tests__/**' },
-                    { file: '**/src/**/?(*.){spec|test}.*' },
-                ],
-            },
-        }),
-    ],
+    // plugins: [
+    //   new ForkTsCheckerWebpackPlugin({
+    //     typescript: {
+    //       configOverwrite: {
+    //         include: ['src/main'],
+    //       },
+    //       diagnosticOptions: {
+    //         syntactic: true,
+    //       },
+    //       mode: 'write-references',
+    //     },
+    //     async: !isProduction,
+    //     logger: {
+    //       infrastructure: 'silent',
+    //     },
+    //     issue: {
+    //       include: [
+    //         { file: '../**/src/main/**/*.ts' },
+    //         { file: '**/src/main/**/*.ts' },
+    //       ],
+    //       exclude: [
+    //         { file: '**/src/**/__tests__/**' },
+    //         { file: '**/src/**/?(*.){spec|test}.*' },
+    //       ],
+    //     },
+    //   }),
+    // ],
     resolve: {
         extensions: ['.ts', '.js', '.json', '.node'],
         alias: { ...alias },

@@ -54,6 +54,9 @@ function buildRendererBundle() {
     });
 }
 function buildMainBundle() {
+    if (process.env.APP_RUNTIME_ENV === 'web') {
+        return Promise.resolve();
+    }
     const spinner = (0, ora_1.default)('[Main:Process] start build. \n').start();
     return new Promise((r, j) => {
         const { mainConfig } = require('../webpack.main.config');

@@ -24,33 +24,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setEnv = void 0;
 /**
  * 设置默认环境变量
- * @param isDev
  */
-function setEnv(isDev) {
-    if (process.env.PUBLIC_URL === undefined) {
-        process.env.PUBLIC_URL = '/';
-    }
-    if (process.env.HOST === undefined) {
-        process.env.HOST = '0.0.0.0';
-    }
-    if (process.env.PORT === undefined) {
-        process.env.HOST = '3000';
-    }
-    if (process.env.WDS_SOCKET_HOST === undefined) {
-        process.env.WDS_SOCKET_HOST = process.env.HOST;
-    }
-    if (process.env.WDS_SOCKET_PORT === undefined) {
-        process.env.WDS_SOCKET_PORT = process.env.PORT;
-    }
-    if (process.env.WDS_SOCKET_PATH === undefined) {
-        process.env.WDS_SOCKET_PATH = '/ws';
-    }
-    if (process.env.APP_RUNTIME_ENV === undefined) {
-        process.env.APP_RUNTIME_ENV = '';
-    }
-    if (process.env.MAX_OLD_SPACE_SIZE === undefined) {
-        process.env.MAX_OLD_SPACE_SIZE = '4096';
-    }
-    process.env.NODE_ENV = isDev ? 'development' : 'production';
+function setEnv() {
+    process.env.PUBLIC_URL = process.env.PUBLIC_URL ?? '/';
+    process.env.APP_RUNTIME_ENV = process.env.APP_RUNTIME_ENV ?? 'electron';
+    process.env.MAX_OLD_SPACE_SIZE = process.env.MAX_OLD_SPACE_SIZE ?? '4096';
+    process.env.HOST = process.env.HOST ?? '127.0.0.1';
+    process.env.PORT = process.env.PORT ?? '3000';
+    process.env.WDS_SOCKET_HOST = process.env.WDS_SOCKET_HOST ?? process.env.HOST;
+    process.env.WDS_SOCKET_PORT = process.env.WDS_SOCKET_PORT ?? process.env.PORT;
+    process.env.WDS_SOCKET_PATH = process.env.WDS_SOCKET_PATH ?? '/ws';
+    process.env.APP_RUNTIME_ENV = process.env.APP_RUNTIME_ENV ?? 'electron';
+    process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
 }
 exports.setEnv = setEnv;

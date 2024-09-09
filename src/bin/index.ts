@@ -35,7 +35,6 @@ import { install } from '../lib/install';
 import { swaggerGenerator } from '../lib/swagger-generator';
 import dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
-
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
 
 program.version(PACKAGE.version as string, '-v, --version');
@@ -43,11 +42,10 @@ program.version(PACKAGE.version as string, '-v, --version');
 program
   .command('start')
   .description('Start react app')
-  .option('-M, --max_old_space_size [size]', 'memory limit', '4096')
-  .action((option: { max_old_space_size: string }) => {
+  .action(() => {
     expand(dotenv.config());
-    setEnv(true);
-    const size = Number(option.max_old_space_size);
+    setEnv();
+    const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
       throw new TypeError(
         'The option "max_old_space_size" argument is a number type.'
@@ -63,11 +61,10 @@ program
         'The option "max_old_space_size" argument must be multiple of 1024.'
       );
     }
-
     spawn(
       'node',
       [
-        `--max_old_space_size=${size}`,
+        `--max_old_space_size=${process.env.MAX_OLD_SPACE_SIZE}`,
         path.join(__dirname, '../', 'lib', 'start.js'),
       ],
       {

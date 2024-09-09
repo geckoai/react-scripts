@@ -47,7 +47,6 @@ import ignoredFiles from './ignoredFiles';
 import WebpackDevServer from 'webpack-dev-server';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import TerserPlugin from 'terser-webpack-plugin';
-import * as process from 'node:process';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -152,7 +151,7 @@ let eslintOptions: EslintOpts | null = {
 let devServerOptions: WebpackDevServer.Configuration = {
   static: {
     directory: path.resolve('public'),
-    publicPath: [process.env.PUBLIC_URL || ''],
+    publicPath: [process.env.PUBLIC_URL],
     watch: {
       ignored: ignoredFiles(path.resolve('src')),
     },
@@ -177,14 +176,12 @@ let devServerOptions: WebpackDevServer.Configuration = {
   port,
   historyApiFallback: {
     disableDotRule: true,
-    index: process.env.PUBLIC_URL || '/',
+    index: process.env.PUBLIC_URL,
   },
   setupMiddlewares: (middlewares, devServer) => {
     middlewares.unshift(evalSourceMapMiddleware(devServer));
-    middlewares.push(redirectServedPath(process.env.PUBLIC_URL || '/'));
-    middlewares.push(
-      noopServiceWorkerMiddleware(process.env.PUBLIC_URL || '/')
-    );
+    middlewares.push(redirectServedPath(process.env.PUBLIC_URL));
+    middlewares.push(noopServiceWorkerMiddleware(process.env.PUBLIC_URL));
     return middlewares;
   },
   compress: true,
@@ -475,7 +472,12 @@ const configuration: Configuration = {
     path: path.resolve('dist', 'renderer'),
     filename: 'assets/js/[name].[contenthash:8].js',
   },
-  target: 'electron23.3-renderer',
+  target:
+    process.env.APP_RUNTIME_ENV === 'electron'
+      ? 'electron23.3-renderer'
+      : isProduction
+      ? 'browserslist'
+      : 'web',
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.node'],
@@ -511,6 +513,7 @@ const configuration: Configuration = {
             incremental: true,
             tsBuildInfoFile: path.resolve(),
           },
+          include: ['src/main'],
         },
         context: path.resolve(),
         diagnosticOptions: {
@@ -520,8 +523,8 @@ const configuration: Configuration = {
       },
       issue: {
         include: [
-          { file: '../**/src/renderer/**/*.{ts,tsx}' },
-          { file: '**/src/renderer/**/*.{ts,tsx}' },
+          { file: '../**/src/**/*.{ts,tsx}' },
+          { file: '**/src/**/*.{ts,tsx}' },
         ],
         exclude: [
           { file: '**/src/**/__tests__/**' },

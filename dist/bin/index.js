@@ -44,11 +44,10 @@ commander_1.program.version(PACKAGE.version, '-v, --version');
 commander_1.program
     .command('start')
     .description('Start react app')
-    .option('-M, --max_old_space_size [size]', 'memory limit', '4096')
-    .action((option) => {
+    .action(() => {
     (0, dotenv_expand_1.expand)(dotenv_1.default.config());
-    (0, set_env_1.setEnv)(true);
-    const size = Number(option.max_old_space_size);
+    (0, set_env_1.setEnv)();
+    const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
         throw new TypeError('The option "max_old_space_size" argument is a number type.');
     }
@@ -59,7 +58,7 @@ commander_1.program
         throw new TypeError('The option "max_old_space_size" argument must be multiple of 1024.');
     }
     (0, child_process_1.spawn)('node', [
-        `--max_old_space_size=${size}`,
+        `--max_old_space_size=${process.env.MAX_OLD_SPACE_SIZE}`,
         path_1.default.join(__dirname, '../', 'lib', 'start.js'),
     ], {
         stdio: 'inherit',
