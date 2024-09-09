@@ -24,31 +24,32 @@
 import 'reflect-metadata';
 import ora from 'ora';
 import { spawn } from 'child_process';
-import { program } from 'commander';
+import { Command } from 'commander';
 import chalk from 'chalk';
 import path from 'path';
 import inquirer from 'inquirer';
-import download from 'download-git-repo';
 import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
 import { swaggerGenerator } from '../lib/swagger-generator';
 import dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
+import { downloadTemplate } from 'giget';
+import fs from 'fs';
 
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
+
+const program = new Command();
 
 program.version(PACKAGE.version as string, '-v, --version');
 
 program
   .command('start')
   .description('Start react app')
-  .option('-M, --max_old_space_size [size]', 'memory limit', '4096')
-  .action((option: { max_old_space_size: string }) => {
+  .action(() => {
     expand(dotenv.config());
-
-    setEnv(true);
-    const size = Number(option.max_old_space_size);
+    setEnv();
+    const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
       throw new TypeError(
         'The option "max_old_space_size" argument is a number type.'
@@ -64,11 +65,10 @@ program
         'The option "max_old_space_size" argument must be multiple of 1024.'
       );
     }
-
     spawn(
       'node',
       [
-        `--max_old_space_size=${size}`,
+        `--max_old_space_size=${process.env.MAX_OLD_SPACE_SIZE}`,
         path.join(__dirname, '../', 'lib', 'start.js'),
       ],
       {
@@ -96,40 +96,60 @@ program
 program
   .command('create <project-name>')
   .description('Create react app')
-  .action((projectName: string) => {
+  .action(async (projectName: string) => {
     const spinner = ora('Start download template.').start();
-    download(
-      'geckoai/react-app-template',
-      path.resolve(projectName),
-      async (err: Error) => {
-        if (err) {
-          spinner.fail(err.message);
-          throw err;
-        }
-        spinner.succeed('Download template success!');
-        const { isInstall } = await inquirer.prompt<{ isInstall: boolean }>({
-          type: 'confirm',
-          name: 'isInstall',
-          message: 'Is install dependencies ?',
-          default: true,
-        });
-        if (isInstall) {
-          const { select } = await inquirer.prompt<{ select: string }>({
-            type: 'list',
-            message: 'Select package manager.',
-            choices: ['use yarn', 'use npm'],
-            default: 0,
-            name: 'select',
-          });
-          try {
-            await install(select === 'use yarn' ? 'yarn' : 'npm', projectName);
-            spinner.succeed('Install success.');
-          } catch (err) {
-            spinner.fail('Install fail.');
-          }
-        }
+
+    try {
+      await downloadTemplate('git:geckoai/react-app-template');
+      spinner.succeed('Download template success!');
+
+      const file = fs.readFileSync(
+        path.resolve(projectName, 'package.json'),
+        'utf8'
+      );
+
+      const json = JSON.parse(file);
+      json.name = projectName;
+
+      const { description } = await inquirer.prompt({
+        type: 'input',
+        name: 'description',
+        message: 'Please enter project description!',
+        default: '',
+      });
+      json.name = description;
+
+      const { author } = await inquirer.prompt({
+        type: 'input',
+        name: 'author',
+        message: 'Please enter project author!',
+        default: 'mingqi-tech',
+      });
+      json.author = author;
+
+      fs.writeFileSync(
+        path.resolve(projectName, 'package.json'),
+        JSON.stringify(json, null, 2)
+      );
+
+      const { isInstall } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'isInstall',
+        message: 'Is install dependencies ?',
+        default: true,
+      });
+
+      if (isInstall) {
+        await install('pnpm', projectName);
+      } else {
+        console.log(chalk.green('\nTo get started:'));
+        console.log(chalk.yellow(`cd ${projectName}`));
+        console.log(chalk.yellow('pnpm install'));
+        console.log(chalk.yellow('pnpm start'));
       }
-    );
+    } catch (err: any) {
+      spinner.fail(err?.message);
+    }
   });
 
 program.parse(process.argv);
