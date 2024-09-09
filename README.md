@@ -3,27 +3,27 @@
 ### install
 
 ```shell
-npm i @geckoai/react-scripts
+npm i @geckoai/electron-react-scripts
 # or
-yarn add @geckoai/react-scripts
+yarn add @geckoai/electron-react-scripts
 ```
 
 ### create app
 
-1. Global install the package `@geckoai/react-scripts`;
+1. Global install the package `@geckoai/electron-react-scripts`;
 
 ```shell
 # mac/ubuntu
-sudo npm i -g @geckoai/react-scripts
+sudo npm i -g @geckoai/electron-react-scripts
 # windows
-npm i -g @geckoai/react-scripts
+npm i -g @geckoai/electron-react-scripts
 ```
 
 2. Create a app
 
 ```shell
 # input your app-name
-react-scripts create app-name
+electron-react-scripts create app-name
 
 # in your app-name
 cd app-name
@@ -49,38 +49,36 @@ npm build
 yarn build
 ```
 
+### ENV
 
-### Close bundleAnalyzer
+包含以下三个配置文件
 
-Open file `project.config.js`
-
-```ts
-{
-  /**
-   * BundleAnalyzerPlugin
-   * https://www.npmjs.com/package/webpack-bundle-analyzer
-   */
-  bundleAnalyzer: null
-}
-```
-
-### Start args
+.env
+.env.production
+.env.development
 
 ```shell
-# boot of dev mode
-react-scripts start -M 8192
+# 开发主机地址
+HOST=127.0.0.1
+# 开发端口
+PORT=3012
 
-# boot of build mode
-react-scripts build -M 8192
+# websocket主机地址 默认主机地址
+# WDS_SOCKET_HOST=0.0.0.0
 
-```
-or change file `package.json` field `scripts`:
+# websocket主机地址 默认开发端口
+# WDS_SOCKET_PORT=3012
 
-```json
-{
-  "scripts": {
-    "start": "react-scripts start -M 8192",
-    "build": "react-scripts build -M 8192"
-  }
-}
+# websocket path 默认/ws
+# WDS_SOCKET_PATH=/ws
+
+# 内存分配默认4G 可以设置为1024的倍数
+MAX_OLD_SPACE_SIZE='4096'
+
+# 运行平台 默认electron 可选值有web
+# APP_RUNTIME_ENV=web
+APP_RUNTIME_ENV=electron
+
+# electron生产时需要使用./ 因为走的是file协议 默认web版本的使用/
+PUBLIC_URL=/
 ```
