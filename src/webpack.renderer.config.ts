@@ -47,6 +47,7 @@ import ignoredFiles from './ignoredFiles';
 import WebpackDevServer from 'webpack-dev-server';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import TerserPlugin from 'terser-webpack-plugin';
+import * as process from 'node:process';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -469,7 +470,10 @@ const configuration: Configuration = {
   },
   output: {
     publicPath: process.env.PUBLIC_URL,
-    path: path.resolve('dist', 'renderer'),
+    path:
+      process.env.APP_RUNTIME_ENV === 'electron'
+        ? path.resolve('dist', 'renderer')
+        : path.resolve('dist'),
     filename: 'assets/js/[name].[contenthash:8].js',
   },
   target:

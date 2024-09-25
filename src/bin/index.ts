@@ -37,6 +37,7 @@ import dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 import fs from 'fs';
 import validate from 'validate-npm-package-name';
+import * as process from 'node:process';
 
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
 
@@ -50,6 +51,7 @@ program
   .action(() => {
     expand(dotenv.config());
     setEnv();
+    process.env.NODE_ENV = 'development';
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
       throw new TypeError(
@@ -91,6 +93,7 @@ program
   .action(() => {
     expand(dotenv.config());
     setEnv();
+    process.env.NODE_ENV = 'production';
     build();
   });
 
@@ -100,7 +103,7 @@ program
   .action(async (projectName: string) => {
     const spinner = ora('Start download template.').start();
     try {
-      const { warnings, validForNewPackages } = validate(projectName);
+      const { warnings } = validate(projectName);
       if (warnings?.length) {
         warnings.forEach((x) => {
           console.warn(x);
