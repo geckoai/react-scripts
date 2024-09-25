@@ -49,9 +49,9 @@ program
   .command('start')
   .description('Start react app')
   .action(() => {
+    process.env.NODE_ENV = 'development';
     expand(dotenv.config());
     setEnv();
-    process.env.NODE_ENV = 'development';
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
       throw new TypeError(
@@ -91,9 +91,9 @@ program
   .command('build')
   .description('Build react app')
   .action(() => {
+    process.env.NODE_ENV = 'production';
     expand(dotenv.config());
     setEnv();
-    process.env.NODE_ENV = 'production';
     build();
   });
 

@@ -72,9 +72,9 @@ program
     .command('start')
     .description('Start react app')
     .action(() => {
+    process.env.NODE_ENV = 'development';
     (0, dotenv_expand_1.expand)(dotenv_1.default.config());
     (0, set_env_1.setEnv)();
-    process.env.NODE_ENV = 'development';
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
         throw new TypeError('The option "max_old_space_size" argument is a number type.');
@@ -102,9 +102,9 @@ program
     .command('build')
     .description('Build react app')
     .action(() => {
+    process.env.NODE_ENV = 'production';
     (0, dotenv_expand_1.expand)(dotenv_1.default.config());
     (0, set_env_1.setEnv)();
-    process.env.NODE_ENV = 'production';
     (0, build_1.build)();
 });
 program

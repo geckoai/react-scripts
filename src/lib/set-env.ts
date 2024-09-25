@@ -33,5 +33,4 @@ export function setEnv(): void {
   process.env.WDS_SOCKET_PORT = process.env.WDS_SOCKET_PORT ?? process.env.PORT;
   process.env.WDS_SOCKET_PATH = process.env.WDS_SOCKET_PATH ?? '/ws';
   process.env.APP_RUNTIME_ENV = process.env.APP_RUNTIME_ENV ?? 'electron';
-  process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
 }
