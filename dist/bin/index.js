@@ -73,7 +73,9 @@ program
     .description('Start react app')
     .action(() => {
     process.env.NODE_ENV = 'development';
-    (0, dotenv_expand_1.expand)(dotenv_1.default.config());
+    (0, dotenv_expand_1.expand)(dotenv_1.default.config({
+        path: ['.env.development', '.env'],
+    }));
     (0, set_env_1.setEnv)();
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
@@ -103,7 +105,9 @@ program
     .description('Build react app')
     .action(() => {
     process.env.NODE_ENV = 'production';
-    (0, dotenv_expand_1.expand)(dotenv_1.default.config());
+    (0, dotenv_expand_1.expand)(dotenv_1.default.config({
+        path: ['.env.production', '.env'],
+    }));
     (0, set_env_1.setEnv)();
     (0, build_1.build)();
 });

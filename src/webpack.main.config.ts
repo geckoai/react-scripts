@@ -33,7 +33,7 @@ export const config: Configuration = {
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.resolve('node_modules', '.electron', 'main'),
+    path: path.resolve('dist', 'main'),
   },
   module: {
     rules: [

@@ -32,7 +32,7 @@ exports.config = {
     output: {
         filename: '[name].js',
         libraryTarget: 'commonjs2',
-        path: path_1.default.resolve('node_modules', '.electron', 'main'),
+        path: path_1.default.resolve('dist', 'main'),
     },
     module: {
         rules: [
