@@ -74,7 +74,7 @@ program
     .action(() => {
     process.env.NODE_ENV = 'development';
     (0, dotenv_expand_1.expand)(dotenv_1.default.config({
-        path: ['.env.development', '.env'],
+        path: ['.env.local', '.env.development', '.env'],
     }));
     (0, set_env_1.setEnv)();
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
@@ -106,7 +106,7 @@ program
     .action(() => {
     process.env.NODE_ENV = 'production';
     (0, dotenv_expand_1.expand)(dotenv_1.default.config({
-        path: ['.env.production', '.env'],
+        path: ['.env.local', '.env.production', '.env'],
     }));
     (0, set_env_1.setEnv)();
     (0, build_1.build)();

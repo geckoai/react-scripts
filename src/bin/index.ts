@@ -52,7 +52,7 @@ program
     process.env.NODE_ENV = 'development';
     expand(
       dotenv.config({
-        path: ['.env.development', '.env'],
+        path: ['.env.local', '.env.development', '.env'],
       } as any)
     );
     setEnv();
@@ -98,7 +98,7 @@ program
     process.env.NODE_ENV = 'production';
     expand(
       dotenv.config({
-        path: ['.env.production', '.env'],
+        path: ['.env.local', '.env.production', '.env'],
       } as any)
     );
     setEnv();
