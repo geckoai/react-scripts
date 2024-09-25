@@ -21,6 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -41,6 +64,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const dotenv_expand_1 = require("dotenv-expand");
 const fs_1 = __importDefault(require("fs"));
 const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
+const process = __importStar(require("node:process"));
 const PACKAGE = require(path_1.default.join(__dirname, '../', '../', 'package.json'));
 const program = new commander_1.Command();
 program.version(PACKAGE.version, '-v, --version');
@@ -50,6 +74,7 @@ program
     .action(() => {
     (0, dotenv_expand_1.expand)(dotenv_1.default.config());
     (0, set_env_1.setEnv)();
+    process.env.NODE_ENV = 'development';
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
         throw new TypeError('The option "max_old_space_size" argument is a number type.');
@@ -79,6 +104,7 @@ program
     .action(() => {
     (0, dotenv_expand_1.expand)(dotenv_1.default.config());
     (0, set_env_1.setEnv)();
+    process.env.NODE_ENV = 'production';
     (0, build_1.build)();
 });
 program
@@ -87,7 +113,7 @@ program
     .action(async (projectName) => {
     const spinner = (0, ora_1.default)('Start download template.').start();
     try {
-        const { warnings, validForNewPackages } = (0, validate_npm_package_name_1.default)(projectName);
+        const { warnings } = (0, validate_npm_package_name_1.default)(projectName);
         if (warnings?.length) {
             warnings.forEach((x) => {
                 console.warn(x);

@@ -20,6 +20,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -42,6 +65,7 @@ const fs_1 = __importDefault(require("fs"));
 const ignoredFiles_1 = __importDefault(require("./ignoredFiles"));
 const webpack_bundle_analyzer_1 = require("webpack-bundle-analyzer");
 const terser_webpack_plugin_1 = __importDefault(require("terser-webpack-plugin"));
+const process = __importStar(require("node:process"));
 const isProduction = process.env.NODE_ENV === 'production';
 const DotEnv = require('dotenv-webpack');
 const HtmlWebpackDeployPlugin = require('html-webpack-deploy-plugin');
@@ -446,7 +470,9 @@ const configuration = {
     },
     output: {
         publicPath: process.env.PUBLIC_URL,
-        path: path_1.default.resolve('dist', 'renderer'),
+        path: process.env.APP_RUNTIME_ENV === 'electron'
+            ? path_1.default.resolve('dist', 'renderer')
+            : path_1.default.resolve('dist'),
         filename: 'assets/js/[name].[contenthash:8].js',
     },
     target: process.env.APP_RUNTIME_ENV === 'electron'
