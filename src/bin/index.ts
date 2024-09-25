@@ -53,7 +53,7 @@ program
     expand(
       dotenv.config({
         path: ['.env.local', '.env.development', '.env'],
-      } as any)
+      })
     );
     setEnv();
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
@@ -99,7 +99,7 @@ program
     expand(
       dotenv.config({
         path: ['.env.local', '.env.production', '.env'],
-      } as any)
+      })
     );
     setEnv();
     build();
