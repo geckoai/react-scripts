@@ -36,7 +36,7 @@ export const config: Configuration = {
     libraryTarget: 'commonjs2',
     path:
       process.env.APP_RUNTIME_ENV === 'electron'
-        ? path.resolve('node_modules', '.electron', 'main')
+        ? path.resolve('build', 'web', 'main')
         : path.resolve('dist', 'main'),
   },
   module: {

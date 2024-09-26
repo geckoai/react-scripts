@@ -555,7 +555,7 @@ const configuration: Configuration = {
             from: path.resolve('public'),
             to:
               process.env.APP_RUNTIME_ENV === 'electron'
-                ? path.resolve('node_modules', '.electron', 'renderer')
+                ? path.resolve('build', 'web', 'renderer')
                 : path.resolve('dist'),
             filter: (p: any): boolean => path.extname(p) !== '.html',
           },
