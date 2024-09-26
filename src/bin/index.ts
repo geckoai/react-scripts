@@ -33,7 +33,7 @@ import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
 import { swaggerGenerator } from '../lib/swagger-generator';
-import dotenv from 'dotenv';
+import dotenv from '@dotenvx/dotenvx';
 import { expand } from 'dotenv-expand';
 import fs from 'fs';
 import validate from 'validate-npm-package-name';
@@ -50,11 +50,7 @@ program
   .description('Start react app')
   .action(() => {
     process.env.NODE_ENV = 'development';
-    expand(
-      dotenv.config({
-        path: path.resolve('.env.development'),
-      })
-    );
+    expand(dotenv.config({ path: ['.env.local', '.env.development', '.env'] }));
     setEnv();
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
@@ -98,7 +94,7 @@ program
     process.env.NODE_ENV = 'production';
     expand(
       dotenv.config({
-        path: path.resolve('.env.production'),
+        path: ['.env.local', '.env.production', '.env'],
       })
     );
     setEnv();

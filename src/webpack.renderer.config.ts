@@ -472,7 +472,7 @@ const configuration: Configuration = {
     publicPath: process.env.PUBLIC_URL,
     path:
       process.env.APP_RUNTIME_ENV === 'electron'
-        ? path.resolve('dist', 'renderer')
+        ? path.resolve('node_modules', '.electron', 'renderer')
         : path.resolve('dist'),
     filename: 'assets/js/[name].[contenthash:8].js',
   },
@@ -555,7 +555,7 @@ const configuration: Configuration = {
             from: path.resolve('public'),
             to:
               process.env.APP_RUNTIME_ENV === 'electron'
-                ? path.resolve('dist', 'renderer')
+                ? path.resolve('node_modules', '.electron', 'renderer')
                 : path.resolve('dist'),
             filter: (p: any): boolean => path.extname(p) !== '.html',
           },

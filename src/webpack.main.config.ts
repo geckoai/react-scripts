@@ -3,6 +3,7 @@ import { Configuration } from 'webpack';
 import path from 'path';
 import fs from 'fs';
 import { merge } from 'webpack-merge';
+import * as process from 'node:process';
 
 const isProduction = process.env.NODE_ENV === 'production';
 let alias: any = null;
@@ -33,7 +34,10 @@ export const config: Configuration = {
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
-    path: path.resolve('dist', 'main'),
+    path:
+      process.env.APP_RUNTIME_ENV === 'electron'
+        ? path.resolve('node_modules', '.electron', 'main')
+        : path.resolve('dist', 'main'),
   },
   module: {
     rules: [
