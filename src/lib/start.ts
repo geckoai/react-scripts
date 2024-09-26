@@ -160,7 +160,7 @@ function startElectron(): void {
     return;
   }
   mainProcess = spawn(electron, [
-    path.resolve('node_modules', '.electron', 'main.js'),
+    path.resolve('node_modules', '.electron', 'main', 'main.js'),
   ]);
   mainProcess.stdout.pipe(process.stdout);
   mainProcess.on('close', () => {
