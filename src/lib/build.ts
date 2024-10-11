@@ -24,6 +24,7 @@ import { Configuration, webpack } from 'webpack';
 import rimraf from 'rimraf';
 import path from 'path';
 import ora from 'ora';
+import * as process from 'node:process';
 
 function buildRendererBundle(): Promise<void> {
   const spinner = ora('[UI:Process] start build. \n').start();
@@ -82,7 +83,12 @@ function buildMainBundle(): Promise<any> {
  * build
  */
 export function build(): void {
-  rimraf.sync(path.resolve('dist'));
+  if (process.env.APP_RUNTIME_ENV === 'electron') {
+    rimraf.sync(path.resolve('build'));
+  }
+  if (process.env.APP_RUNTIME_ENV === 'web') {
+    rimraf.sync(path.resolve('dist'));
+  }
   Promise.all([buildMainBundle(), buildRendererBundle()]).catch((err) => {
     console.log(err);
   });

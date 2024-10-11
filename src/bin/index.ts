@@ -50,7 +50,12 @@ program
   .description('Start react app')
   .action(() => {
     process.env.NODE_ENV = 'development';
-    expand(dotenv.config({ path: ['.env.local', '.env.development', '.env'] }));
+    expand(
+      dotenv.config({
+        path: ['.env.local', '.env.development', '.env'],
+        processEnv: { ...process.env } as any,
+      })
+    );
     setEnv();
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
