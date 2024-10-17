@@ -368,96 +368,106 @@ const configuration: Configuration = {
       },
       {
         test: /\.(png|jpe?g|gif|svg|bmp|webp)(\?.*)?$/,
-        use: isProduction
-          ? [
-              {
-                issuer: /\.css$/,
-                use: {
-                  loader: 'file-loader',
-                  options: {
-                    name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                    limit: 10000,
-                    esModule: false,
-                    ...fileLoaderOptions,
+        oneOf: isProduction
+          ? process.env.APP_RUNTIME_ENV === 'electron'
+            ? [
+                {
+                  issuer: /\.css$/,
+                  use: {
+                    loader: 'url-loader',
                   },
                 },
-              },
-              {
-                loader: 'url-loader',
-                options: {
-                  esModule: false,
+                {
+                  use: {
+                    loader: 'file-loader',
+                    options: {
+                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                      limit: 10000,
+                      esModule: false,
+                      ...fileLoaderOptions,
+                    },
+                  },
                 },
-              },
-            ]
+              ]
+            : [
+                {
+                  use: {
+                    loader: 'file-loader',
+                    options: {
+                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                      limit: 10000,
+                      esModule: false,
+                      ...fileLoaderOptions,
+                    },
+                  },
+                },
+              ]
           : [
               {
-                loader: 'url-loader',
-                options: {
-                  esModule: false,
+                use: {
+                  loader: 'url-loader',
                 },
               },
             ],
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-        use: isProduction
-          ? [
-              {
-                issuer: /\.css$/,
-                use: {
-                  loader: 'file-loader',
-                  options: {
-                    name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                    limit: 10000,
-                    esModule: false,
-                    ...fileLoaderOptions,
-                  },
-                },
-              },
-              {
-                loader: 'url-loader',
+        use: [
+          isProduction
+            ? {
+                loader: 'file-loader',
                 options: {
+                  name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                  limit: 10000,
                   esModule: false,
+                  ...fileLoaderOptions,
                 },
-              },
-            ]
-          : [
-              {
+              }
+            : {
                 loader: 'url-loader',
-                options: {
-                  esModule: false,
-                },
               },
-            ],
+        ],
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        use: isProduction
-          ? [
-              {
-                issuer: /\.css$/,
-                use: {
-                  loader: 'file-loader',
-                  options: {
-                    name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                    limit: 10000,
-                    esModule: false,
-                    ...fileLoaderOptions,
+        oneOf: isProduction
+          ? process.env.APP_RUNTIME_ENV === 'electron'
+            ? [
+                {
+                  issuer: /\.css$/,
+                  use: {
+                    loader: 'url-loader',
                   },
                 },
-              },
-              {
-                loader: 'url-loader',
-                options: {
-                  esModule: false,
+                {
+                  use: {
+                    loader: 'file-loader',
+                    options: {
+                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                      limit: 10000,
+                      esModule: false,
+                      ...fileLoaderOptions,
+                    },
+                  },
                 },
-              },
-            ]
+              ]
+            : [
+                {
+                  use: {
+                    loader: 'file-loader',
+                    options: {
+                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                      limit: 10000,
+                      esModule: false,
+                      ...fileLoaderOptions,
+                    },
+                  },
+                },
+              ]
           : [
               {
-                loader: 'url-loader',
-                options: {
-                  esModule: false,
+                use: {
+                  loader: 'url-loader',
                 },
               },
             ],
