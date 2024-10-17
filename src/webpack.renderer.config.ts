@@ -368,47 +368,21 @@ const configuration: Configuration = {
       },
       {
         test: /\.(png|jpe?g|gif|svg|bmp|webp)(\?.*)?$/,
-        oneOf: isProduction
-          ? process.env.APP_RUNTIME_ENV === 'electron'
-            ? [
-                {
-                  issuer: /\.css$/,
-                  use: {
-                    loader: 'url-loader',
-                  },
-                },
-                {
-                  use: {
-                    loader: 'file-loader',
-                    options: {
-                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                      limit: 10000,
-                      esModule: false,
-                      ...fileLoaderOptions,
-                    },
-                  },
-                },
-              ]
-            : [
-                {
-                  use: {
-                    loader: 'file-loader',
-                    options: {
-                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                      limit: 10000,
-                      esModule: false,
-                      ...fileLoaderOptions,
-                    },
-                  },
-                },
-              ]
-          : [
-              {
-                use: {
-                  loader: 'url-loader',
+        use: [
+          isProduction && process.env.APP_RUNTIME_ENV === 'electron'
+            ? {
+                loader: 'url-loader',
+              }
+            : {
+                loader: 'file-loader',
+                options: {
+                  name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                  limit: 10000,
+                  esModule: false,
+                  ...fileLoaderOptions,
                 },
               },
-            ],
+        ],
       },
       {
         test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
@@ -430,47 +404,21 @@ const configuration: Configuration = {
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        oneOf: isProduction
-          ? process.env.APP_RUNTIME_ENV === 'electron'
-            ? [
-                {
-                  issuer: /\.css$/,
-                  use: {
-                    loader: 'url-loader',
-                  },
-                },
-                {
-                  use: {
-                    loader: 'file-loader',
-                    options: {
-                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                      limit: 10000,
-                      esModule: false,
-                      ...fileLoaderOptions,
-                    },
-                  },
-                },
-              ]
-            : [
-                {
-                  use: {
-                    loader: 'file-loader',
-                    options: {
-                      name: 'assets/fonts/[name].[contenthash:8].[ext]',
-                      limit: 10000,
-                      esModule: false,
-                      ...fileLoaderOptions,
-                    },
-                  },
-                },
-              ]
-          : [
-              {
-                use: {
-                  loader: 'url-loader',
+        use: [
+          isProduction && process.env.APP_RUNTIME_ENV === 'electron'
+            ? {
+                loader: 'url-loader',
+              }
+            : {
+                loader: 'file-loader',
+                options: {
+                  name: 'assets/fonts/[name].[contenthash:8].[ext]',
+                  limit: 10000,
+                  esModule: false,
+                  ...fileLoaderOptions,
                 },
               },
-            ],
+        ],
       },
       {
         test: /\.m?jsx?$/,
