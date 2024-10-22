@@ -99,6 +99,11 @@ program
     .command('swagger-generator')
     .description('Build swagger docs')
     .action(async () => {
+    (0, dotenv_expand_1.expand)(dotenvx_1.default.config({
+        path: ['.env.local', '.env.development', '.env'],
+        processEnv: { ...process.env },
+    }));
+    (0, set_env_1.setEnv)();
     await (0, swagger_generator_1.swaggerGenerator)();
 });
 program

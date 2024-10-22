@@ -91,9 +91,11 @@ program
   .action(async () => {
     expand(
       dotenv.config({
-        path: ['.env.local', '.env'],
+        path: ['.env.local', '.env.development', '.env'],
+        processEnv: { ...process.env } as any,
       })
     );
+    setEnv();
     await swaggerGenerator();
   });
 
