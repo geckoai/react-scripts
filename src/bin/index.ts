@@ -89,6 +89,11 @@ program
   .command('swagger-generator')
   .description('Build swagger docs')
   .action(async () => {
+    expand(
+      dotenv.config({
+        path: ['.env.local', '.env'],
+      })
+    );
     await swaggerGenerator();
   });
 
