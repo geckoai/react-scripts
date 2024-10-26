@@ -191,8 +191,8 @@ importers:
         version: 2.3.3
     devDependencies:
       '@geckoai/http':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^2.0.0
+        version: 2.0.0
       '@types/inquirer':
         specifier: ^8.2.0
         version: 8.2.10
@@ -1058,14 +1058,23 @@ packages:
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
+  '@geckoai/axios@1.7.7':
+    resolution: {integrity: sha512-UNnzO060ORjrAHu+fbymdpLmX4DYyfIg6kV1mv9JO6VHUCui+USVVQaOebSGD2W4cqWIMKD8GcsIiJ4oEx2wpQ==}
+
   '@geckoai/class-mirror@1.0.0':
     resolution: {integrity: sha512-j/JNOUr21xWRTCVOAYdXbHo7tMm3Wm8DdjaiYmmkKVr/kcDes8wjRAkGytU7Whp48f5XsKz4s0P6IKsnWvTPug==}
+
+  '@geckoai/class-mirror@1.0.1':
+    resolution: {integrity: sha512-fc9ns5Hlm+muePMSKN7CCDiHNHb/ZaQLoDWva/CxnQjm4CdDG3u6C72ts+YtXfozkQmP5nCJPtt/MsVkNtCegw==}
 
   '@geckoai/class-transformer@1.0.0':
     resolution: {integrity: sha512-IC5mEaluIBLuBJAwSY8ePBS55pyPo9iBm43xwDxkWGJ4UMsOPQV1SG+po8YEu1dstLWanqZAeMkVD9KCD542Sg==}
 
-  '@geckoai/http@1.0.0':
-    resolution: {integrity: sha512-3FZT7RSVZdGpWkrbt1Grqm3IGEQ8WNjBIqbaflPuJcnwhK304w6/UTS8F5UYVllfEG1jc+l5bEMaaenrDLloSA==}
+  '@geckoai/class-transformer@1.0.1':
+    resolution: {integrity: sha512-Gv5Iuf25cgQvK9clHcgZ4MYu0COQ6OHsbh9mIiehPgGWtoLOZGtEqZ5z0Sw0z/uH/RIBEUvuSH9aQT2EUTIUJQ==}
+
+  '@geckoai/http@2.0.0':
+    resolution: {integrity: sha512-1vd+VV3rsi1q6o4S26eC5b8kACSMvHri9qsac4+fBKNHRnRBUweql3w1LCzvmnNFoCEFbmvO/RyfQdj+kf3ZOw==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -4457,6 +4466,9 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
+  proxy-from-env@1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+
   pump@3.0.0:
     resolution: {integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==}
 
@@ -6458,7 +6470,17 @@ snapshots:
 
   '@eslint/js@8.57.0': {}
 
+  '@geckoai/axios@1.7.7':
+    dependencies:
+      follow-redirects: 1.15.6
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
   '@geckoai/class-mirror@1.0.0': {}
+
+  '@geckoai/class-mirror@1.0.1': {}
 
   '@geckoai/class-transformer@1.0.0':
     dependencies:
@@ -6467,7 +6489,18 @@ snapshots:
       async-validator: 4.2.5
       validator: 13.12.0
 
-  '@geckoai/http@1.0.0': {}
+  '@geckoai/class-transformer@1.0.1':
+    dependencies:
+      '@geckoai/class-mirror': 1.0.1
+      '@types/validator': 13.11.10
+      validator: 13.12.0
+
+  '@geckoai/http@2.0.0':
+    dependencies:
+      '@geckoai/axios': 1.7.7
+      '@geckoai/class-transformer': 1.0.1
+    transitivePeerDependencies:
+      - debug
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
@@ -10188,6 +10221,8 @@ snapshots:
     dependencies:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
+
+  proxy-from-env@1.1.0: {}
 
   pump@3.0.0:
     dependencies:
