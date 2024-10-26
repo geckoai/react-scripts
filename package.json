@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/electron-react-scripts",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "electron-react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@babel/runtime-corejs2": "^7.18.9",
-    "@geckoai/class-transformer": "1.0.0",
+    "@geckoai/class-transformer": "1.0.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.15",
     "@types/node": "^20.12.12",
     "@types/webpack-dev-server": "4.5.1",
