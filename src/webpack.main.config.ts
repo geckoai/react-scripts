@@ -1,9 +1,9 @@
-import { Configuration } from 'webpack';
+import { Configuration, EntryObject } from 'webpack';
 // import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import path from 'path';
 import fs from 'fs';
 import { merge } from 'webpack-merge';
-import * as process from 'node:process';
+import glob from 'glob';
 
 const isProduction = process.env.NODE_ENV === 'production';
 let alias: any = null;
@@ -29,11 +29,25 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
   }
 }
 
+const getEntries = (pwd: string): EntryObject => {
+  const entries: EntryObject = {};
+  glob
+    .sync(path.join(pwd, '**', '*.{js,mjs,ts}'), {
+      ignore: ['node_modules/**', '**/*.d.ts'],
+    })
+    .forEach((file) => {
+      const name = path.relative(pwd, file);
+      entries[name] = file;
+    });
+  return entries;
+};
+
 export const config: Configuration = {
-  entry: path.resolve('src', 'main'),
+  entry: getEntries(path.resolve('src', 'main')),
   output: {
-    filename: '[name].js',
+    filename: '[path][name].js',
     libraryTarget: 'commonjs2',
+    clean: true,
     path:
       process.env.APP_RUNTIME_ENV === 'electron'
         ? path.resolve('build', 'web', 'main')

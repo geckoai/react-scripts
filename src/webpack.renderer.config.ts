@@ -459,6 +459,7 @@ const configuration: Configuration = {
   },
   output: {
     publicPath: process.env.PUBLIC_URL,
+    clean: isProduction,
     path:
       process.env.APP_RUNTIME_ENV === 'electron'
         ? path.resolve('build', 'web', 'renderer')
