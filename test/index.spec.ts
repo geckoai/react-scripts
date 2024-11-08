@@ -12,7 +12,8 @@ describe('spec', () => {
           ignore: ['node_modules/**', '**/*.d.ts'],
         })
         .forEach((file) => {
-          const name = path.relative(pwd, file);
+          let name = path.relative(pwd, file);
+          name = name.replace(new RegExp(path.extname(name) + '$'), '');
           entries[name] = file;
         });
       return entries;

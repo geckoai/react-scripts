@@ -36,7 +36,8 @@ const getEntries = (pwd: string): EntryObject => {
       ignore: ['node_modules/**', '**/*.d.ts'],
     })
     .forEach((file) => {
-      const name = path.relative(pwd, file);
+      let name = path.relative(pwd, file);
+      name = name.replace(new RegExp(path.extname(name) + '$'), '');
       entries[name] = file;
     });
   return entries;
@@ -45,7 +46,7 @@ const getEntries = (pwd: string): EntryObject => {
 export const config: Configuration = {
   entry: getEntries(path.resolve('src', 'main')),
   output: {
-    filename: '[path][name].js',
+    filename: '[name].js',
     libraryTarget: 'commonjs2',
     clean: true,
     path:

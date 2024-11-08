@@ -35,7 +35,8 @@ const getEntries = (pwd) => {
         ignore: ['node_modules/**', '**/*.d.ts'],
     })
         .forEach((file) => {
-        const name = path_1.default.relative(pwd, file);
+        let name = path_1.default.relative(pwd, file);
+        name = name.replace(new RegExp(path_1.default.extname(name) + '$'), '');
         entries[name] = file;
     });
     return entries;
@@ -43,7 +44,7 @@ const getEntries = (pwd) => {
 exports.config = {
     entry: getEntries(path_1.default.resolve('src', 'main')),
     output: {
-        filename: '[path][name].js',
+        filename: '[name].js',
         libraryTarget: 'commonjs2',
         clean: true,
         path: process.env.APP_RUNTIME_ENV === 'electron'

@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/electron-react-scripts",
-  "version": "1.0.20-beta",
+  "version": "1.0.20-beta2",
   "description": "electron-react-scripts",
   "main": "dist",
   "types": "dist/types",
