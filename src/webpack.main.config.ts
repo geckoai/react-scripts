@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { merge } from 'webpack-merge';
 import glob from 'glob';
+import externals from 'webpack-node-externals';
 
 const isProduction = process.env.NODE_ENV === 'production';
 let alias: any = null;
@@ -44,7 +45,7 @@ const getEntries = (pwd: string): EntryObject => {
 };
 
 export const config: Configuration = {
-  entry: getEntries(path.resolve('src', 'main')),
+  entry: () => getEntries(path.resolve('src', 'main')),
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs2',
@@ -54,6 +55,8 @@ export const config: Configuration = {
         ? path.resolve('build', 'web', 'main')
         : path.resolve('dist', 'main'),
   },
+  externalsPresets: { node: true },
+  externals: [externals()],
   module: {
     rules: [
       {

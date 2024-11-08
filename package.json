@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/electron-react-scripts",
-  "version": "1.0.20-beta3",
+  "version": "1.0.20-beta4",
   "description": "electron-react-scripts",
   "main": "dist",
   "types": "dist/types",
@@ -44,14 +44,16 @@
     "typedoc": "^0.22.13",
     "web-vitals": "^2.1.4",
     "electron": "23.3.13",
-    "@types/validate-npm-package-name": "4.0.2"
+    "@types/validate-npm-package-name": "4.0.2",
+    "@types/webpack-node-externals": "3.0.4",
+    "@types/node": "^20.12.12",
+    "@types/webpack-dev-server": "4.5.1"
   },
   "dependencies": {
+    "webpack-node-externals": "3.0.0",
     "@babel/runtime-corejs2": "^7.18.9",
     "@geckoai/class-transformer": "1.0.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.15",
-    "@types/node": "^20.12.12",
-    "@types/webpack-dev-server": "4.5.1",
     "autoprefixer": "10.4.4",
     "axios": "0.27.2",
     "babel-loader": "8.2.4",
