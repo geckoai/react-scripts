@@ -146,7 +146,7 @@ function startElectron() {
         return;
     }
     mainProcess = (0, child_process_1.spawn)(electron, [
-        path_1.default.resolve('build', 'web', 'main', 'main.js'),
+        path_1.default.resolve('build', 'web', 'main', 'index.js'),
     ]);
     mainProcess.stdout.pipe(process.stdout);
     mainProcess.on('close', () => {
