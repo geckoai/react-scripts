@@ -9,6 +9,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const webpack_merge_1 = require("webpack-merge");
 const glob_1 = __importDefault(require("glob"));
+const webpack_node_externals_1 = __importDefault(require("webpack-node-externals"));
 const isProduction = process.env.NODE_ENV === 'production';
 let alias = null;
 let customWebpackConfig = {};
@@ -42,7 +43,7 @@ const getEntries = (pwd) => {
     return entries;
 };
 exports.config = {
-    entry: getEntries(path_1.default.resolve('src', 'main')),
+    entry: () => getEntries(path_1.default.resolve('src', 'main')),
     output: {
         filename: '[name].js',
         libraryTarget: 'commonjs2',
@@ -51,6 +52,8 @@ exports.config = {
             ? path_1.default.resolve('build', 'web', 'main')
             : path_1.default.resolve('dist', 'main'),
     },
+    externalsPresets: { node: true },
+    externals: [(0, webpack_node_externals_1.default)()],
     module: {
         rules: [
             {
