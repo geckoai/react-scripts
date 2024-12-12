@@ -146,6 +146,7 @@ let eslintOptions: EslintOpts | null = {
     extends: [require.resolve('eslint-config-react-app/base')],
   },
 };
+let enableTsChecker = true;
 
 let devServerOptions: WebpackDevServer.Configuration = {
   static: {
@@ -196,6 +197,9 @@ let alias = null;
 
 if (fs.existsSync(path.resolve('project.config.js'))) {
   const config: any = require(path.resolve('project.config.js'));
+  if (config.enableTsChecker != null) {
+    enableTsChecker = config.enableTsChecker;
+  }
   if (config.webpack) {
     customWebpackConfig = config.webpack;
   }
@@ -494,42 +498,43 @@ const configuration: Configuration = {
       template: path.resolve('public', 'index.html'),
       minify: true,
     }),
-    new ForkTsCheckerWebpackPlugin({
-      async: !isProduction,
-      typescript: {
-        configOverwrite: {
-          compilerOptions: {
-            sourceMap: !isProduction,
-            skipLibCheck: true,
-            inlineSourceMap: false,
-            declarationMap: false,
-            noEmit: true,
-            incremental: true,
-            tsBuildInfoFile: path.resolve(),
+    enableTsChecker &&
+      new ForkTsCheckerWebpackPlugin({
+        async: !isProduction,
+        typescript: {
+          configOverwrite: {
+            compilerOptions: {
+              sourceMap: !isProduction,
+              skipLibCheck: true,
+              inlineSourceMap: false,
+              declarationMap: false,
+              noEmit: true,
+              incremental: true,
+              tsBuildInfoFile: path.resolve(),
+            },
           },
+          context: path.resolve(),
+          diagnosticOptions: {
+            syntactic: true,
+          },
+          mode: 'write-references',
         },
-        context: path.resolve(),
-        diagnosticOptions: {
-          syntactic: true,
+        issue: {
+          include: [
+            { file: '../**/src/**/*.{ts,tsx}' },
+            { file: '**/src/**/*.{ts,tsx}' },
+          ],
+          exclude: [
+            { file: '**/src/**/__tests__/**' },
+            { file: '**/src/**/?(*.){spec|test}.*' },
+            { file: '**/src/setupProxy.*' },
+            { file: '**/src/setupTests.*' },
+          ],
         },
-        mode: 'write-references',
-      },
-      issue: {
-        include: [
-          { file: '../**/src/**/*.{ts,tsx}' },
-          { file: '**/src/**/*.{ts,tsx}' },
-        ],
-        exclude: [
-          { file: '**/src/**/__tests__/**' },
-          { file: '**/src/**/?(*.){spec|test}.*' },
-          { file: '**/src/setupProxy.*' },
-          { file: '**/src/setupTests.*' },
-        ],
-      },
-      logger: {
-        infrastructure: 'silent',
-      },
-    }),
+        logger: {
+          infrastructure: 'silent',
+        },
+      }),
     eslintOptions && new ESLintWebpackPlugin(eslintOptions),
     stylelintOptions && new StylelintWebpackPlugin(stylelintOptions),
     deployOptions && isProduction && new HtmlWebpackDeployPlugin(deployOptions),
