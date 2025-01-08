@@ -32,7 +32,7 @@ import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
 import { swaggerGenerator } from '../lib/swagger-generator';
-import dotenv from 'dotenv';
+import dotenv from '@dotenvx/dotenvx';
 import { expand } from 'dotenv-expand';
 import { downloadTemplate } from 'giget';
 import fs from 'fs';
