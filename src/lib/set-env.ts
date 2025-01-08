@@ -23,7 +23,7 @@
 /**
  * 设置默认环境变量
  */
-export function setEnv(): void {
+export function setEnv(DEF?: string): void {
   process.env.PUBLIC_URL = process.env.PUBLIC_URL ?? '/';
   process.env.MAX_OLD_SPACE_SIZE = process.env.MAX_OLD_SPACE_SIZE ?? '4096';
   process.env.HOST = process.env.HOST ?? '127.0.0.1';
@@ -32,5 +32,5 @@ export function setEnv(): void {
   process.env.WDS_SOCKET_PORT = process.env.WDS_SOCKET_PORT ?? process.env.PORT;
   process.env.WDS_SOCKET_PATH = process.env.WDS_SOCKET_PATH ?? '/ws';
   process.env.APP_RUNTIME_ENV = process.env.APP_RUNTIME_ENV ?? 'web';
-  process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
+  process.env.NODE_ENV = process.env.NODE_ENV ?? DEF ?? 'development';
 }

@@ -47,7 +47,7 @@ program
   .command('start')
   .description('Start react app')
   .argument(
-    '<env>',
+    '[env]',
     'Set which custom env file to use, for example, test will use. env. test',
     'development'
   )
@@ -61,7 +61,7 @@ program
         processEnv: { ...process.env } as any,
       })
     );
-    setEnv();
+    setEnv('development');
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
       throw new TypeError(
@@ -101,12 +101,11 @@ program
   .command('build')
   .description('Build react app')
   .argument(
-    '<env>',
+    '[env]',
     'Set which custom env file to use, for example, test will use. env. test',
     'production'
   )
   .action((env) => {
-    process.env.NODE_ENV = 'production';
     dotenv.config({
       path: ['local', env]
         .filter(Boolean)
@@ -114,7 +113,7 @@ program
         .concat('.env'),
       processEnv: { ...process.env } as any,
     });
-    setEnv();
+    setEnv('production');
     build();
   });
 
