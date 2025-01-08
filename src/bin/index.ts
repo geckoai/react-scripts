@@ -46,8 +46,21 @@ program.version(PACKAGE.version as string, '-v, --version');
 program
   .command('start')
   .description('Start react app')
-  .action(() => {
-    expand(dotenv.config());
+  .argument(
+    '<env>',
+    'Set which custom env file to use, for example, test will use. env. test',
+    'development'
+  )
+  .action((env) => {
+    expand(
+      dotenv.config({
+        path: ['local', env]
+          .filter(Boolean)
+          .map((e: string) => `.env.${e}`)
+          .concat('.env'),
+        processEnv: { ...process.env } as any,
+      })
+    );
     setEnv();
     const size = Number(process.env.MAX_OLD_SPACE_SIZE);
     if (isNaN(size)) {
@@ -87,8 +100,20 @@ program
 program
   .command('build')
   .description('Build react app')
-  .action(() => {
-    expand(dotenv.config());
+  .argument(
+    '<env>',
+    'Set which custom env file to use, for example, test will use. env. test',
+    'production'
+  )
+  .action((env) => {
+    process.env.NODE_ENV = 'production';
+    dotenv.config({
+      path: ['local', env]
+        .filter(Boolean)
+        .map((e: string) => `.env.${e}`)
+        .concat('.env'),
+      processEnv: { ...process.env } as any,
+    });
     setEnv();
     build();
   });
