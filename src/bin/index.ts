@@ -37,6 +37,7 @@ import { expand } from 'dotenv-expand';
 import { downloadTemplate } from 'giget';
 import fs from 'fs';
 import { checkLocalEnv } from '../lib/check';
+import * as process from 'node:process';
 
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
 
@@ -127,7 +128,9 @@ program
     const spinner = ora('Start download template.').start();
 
     try {
-      await downloadTemplate('git:geckoai/react-app-template');
+      await downloadTemplate('gh:geckoai/react-app-template', {
+        dir: path.join(process.cwd(), projectName),
+      });
       spinner.succeed('Download template success!');
 
       const file = fs.readFileSync(
