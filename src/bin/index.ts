@@ -36,6 +36,7 @@ import dotenv from '@dotenvx/dotenvx';
 import { expand } from 'dotenv-expand';
 import { downloadTemplate } from 'giget';
 import fs from 'fs';
+import { checkLocalEnv } from '../lib/check';
 
 const PACKAGE = require(path.join(__dirname, '../', '../', 'package.json'));
 
@@ -52,6 +53,7 @@ program
     'development'
   )
   .action((env) => {
+    checkLocalEnv();
     expand(
       dotenv.config({
         path: ['local', env]
@@ -106,6 +108,7 @@ program
     'production'
   )
   .action((env) => {
+    checkLocalEnv();
     dotenv.config({
       path: ['local', env]
         .filter(Boolean)

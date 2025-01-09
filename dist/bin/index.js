@@ -40,6 +40,7 @@ const dotenvx_1 = __importDefault(require("@dotenvx/dotenvx"));
 const dotenv_expand_1 = require("dotenv-expand");
 const giget_1 = require("giget");
 const fs_1 = __importDefault(require("fs"));
+const check_1 = require("../lib/check");
 const PACKAGE = require(path_1.default.join(__dirname, '../', '../', 'package.json'));
 const program = new commander_1.Command();
 program.version(PACKAGE.version, '-v, --version');
@@ -48,6 +49,7 @@ program
     .description('Start react app')
     .argument('[env]', 'Set which custom env file to use, for example, test will use. env. test', 'development')
     .action((env) => {
+    (0, check_1.checkLocalEnv)();
     (0, dotenv_expand_1.expand)(dotenvx_1.default.config({
         path: ['local', env]
             .filter(Boolean)
@@ -84,6 +86,7 @@ program
     .description('Build react app')
     .argument('[env]', 'Set which custom env file to use, for example, test will use. env. test', 'production')
     .action((env) => {
+    (0, check_1.checkLocalEnv)();
     dotenvx_1.default.config({
         path: ['local', env]
             .filter(Boolean)

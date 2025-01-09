@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/react-scripts",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "react-scripts",
   "main": "dist",
   "types": "dist/types",
