@@ -96,7 +96,23 @@ program
 program
   .command('swagger-generator')
   .description('Build swagger docs')
-  .action(async () => {
+  .argument(
+    '[env]',
+    'Set which custom env file to use, for example, test will use. env. test',
+    'development'
+  )
+  .action(async (env) => {
+    checkLocalEnv();
+    expand(
+      dotenv.config({
+        path: ['local', env]
+          .filter(Boolean)
+          .map((e: string) => `.env.${e}`)
+          .concat('.env'),
+        processEnv: { ...process.env } as any,
+      })
+    );
+    setEnv('development');
     await swaggerGenerator();
   });
 

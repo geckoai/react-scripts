@@ -102,7 +102,17 @@ program
 program
     .command('swagger-generator')
     .description('Build swagger docs')
-    .action(async () => {
+    .argument('[env]', 'Set which custom env file to use, for example, test will use. env. test', 'development')
+    .action(async (env) => {
+    (0, check_1.checkLocalEnv)();
+    (0, dotenv_expand_1.expand)(dotenvx_1.default.config({
+        path: ['local', env]
+            .filter(Boolean)
+            .map((e) => `.env.${e}`)
+            .concat('.env'),
+        processEnv: { ...process.env },
+    }));
+    (0, set_env_1.setEnv)('development');
     await (0, swagger_generator_1.swaggerGenerator)();
 });
 program
