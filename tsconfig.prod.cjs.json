@@ -3,7 +3,9 @@
   "compilerOptions": {
     "module": "CommonJS",
     "outDir": "./dist",
-    "removeComments": false,
-    "tsBuildInfoFile": "./dist/tsconfig.prod.cjs.tsbuildinfo"
-  },
+    "removeComments": true,
+    "tsBuildInfoFile": "./dist/tsconfig.prod.cjs.tsbuildinfo",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
+  }
 }

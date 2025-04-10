@@ -13,9 +13,6 @@ exports.OpenApiPathMethodParameter = void 0;
 const class_transformer_1 = require("@geckoai/class-transformer");
 const open_api_items_1 = require("../open-api-items");
 const typescript_1 = require("typescript");
-/**
- * OpenAPI info docs
- */
 class OpenApiPathMethodParameter {
     name;
     in;
@@ -27,15 +24,9 @@ class OpenApiPathMethodParameter {
     enum;
     items;
     schema;
-    /**
-     * 检测是否包含类型
-     */
     hasType() {
         return Boolean(this.type) || Boolean(this.items) || Boolean(this.schema);
     }
-    /**
-     * 获取类型
-     */
     getType() {
         if (this.type) {
             return this.type;
@@ -44,9 +35,6 @@ class OpenApiPathMethodParameter {
             return this.schema.type;
         }
     }
-    /**
-     * docrators
-     */
     createDecorators(info) {
         const assignmenets = [];
         const members = info.importSource.get('@geckoai/class-transformer') || new Set();
@@ -132,9 +120,6 @@ class OpenApiPathMethodParameter {
         info.importSource.set('@geckoai/class-transformer', members);
         return list;
     }
-    /**
-     * 获取成员类型
-     */
     getItemType() {
         if (this.items && this.items.type) {
             switch (this.items.type) {
@@ -170,10 +155,6 @@ class OpenApiPathMethodParameter {
         }
         return typescript_1.SyntaxKind.AnyKeyword;
     }
-    /**
-     * 创建类型
-     * @param name
-     */
     createTypeNode(name) {
         switch (this.getType()) {
             case 'array':
@@ -200,18 +181,12 @@ class OpenApiPathMethodParameter {
                 return typescript_1.factory.createKeywordTypeNode(typescript_1.SyntaxKind.AnyKeyword);
         }
     }
-    /**
-     * createQuestionOrExclamationToken
-     */
     createQuestionOrExclamationToken() {
         if (!this.required) {
             return typescript_1.factory.createToken(typescript_1.SyntaxKind.QuestionToken);
         }
         return undefined;
     }
-    /**
-     * createDeclaration
-     */
     createDeclaration(info) {
         return typescript_1.factory.createPropertyDeclaration(this.createDecorators(info), [typescript_1.factory.createModifier(typescript_1.SyntaxKind.PublicKeyword)], this.name, this.createQuestionOrExclamationToken(), this.createTypeNode(), undefined);
     }

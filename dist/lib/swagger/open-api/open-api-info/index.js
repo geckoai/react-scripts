@@ -11,9 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenApiInfo = void 0;
 const class_transformer_1 = require("@geckoai/class-transformer");
-/**
- * OpenAPI info docs
- */
 class OpenApiInfo {
     version;
     title;

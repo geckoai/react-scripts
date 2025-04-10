@@ -14,20 +14,12 @@ const class_transformer_1 = require("@geckoai/class-transformer");
 const open_api_items_1 = require("../open-api-items");
 const typescript_1 = require("typescript");
 const utils_1 = require("../../utils");
-/**
- * 输出信息
- */
 class OpenApiDefinitionProperty {
     type;
     description;
     enum;
     items;
     $ref;
-    /**
-     * createDecorators
-     * @param info
-     * @param output
-     */
     createDecorators(info, output) {
         const members = info.importSource.get('@geckoai/http') || new Set();
         const transformers = info.importSource.get('@geckoai/class-transformer') || new Set();
@@ -124,9 +116,6 @@ class OpenApiDefinitionProperty {
             typescript_1.factory.createDecorator(typescript_1.factory.createCallExpression(typescript_1.factory.createIdentifier('Typed'), undefined, [typescript_1.factory.createIdentifier('Any')])),
         ];
     }
-    /**
-     * 获取成员类型
-     */
     getItemType() {
         if (this.items && this.items.type) {
             switch (this.items.type) {
@@ -146,9 +135,6 @@ class OpenApiDefinitionProperty {
         }
         return typescript_1.SyntaxKind.AnyKeyword;
     }
-    /**
-     * 创建类型
-     */
     createTypeNode(output) {
         let name = '';
         if (this.items) {
@@ -201,12 +187,6 @@ class OpenApiDefinitionProperty {
                 return typescript_1.factory.createKeywordTypeNode(typescript_1.SyntaxKind.AnyKeyword);
         }
     }
-    /**
-     * createDeclaration
-     * @param name
-     * @param info
-     * @param output
-     */
     createDeclaration(name, info, output) {
         return typescript_1.factory.createPropertyDeclaration(this.createDecorators(info, output), [typescript_1.factory.createModifier(typescript_1.SyntaxKind.PublicKeyword)], name, undefined, this.createTypeNode(output), undefined);
     }

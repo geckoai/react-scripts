@@ -18,13 +18,7 @@ const open_api_path_method_parameter_1 = require("../open-api-path-method-parame
 const typescript_1 = require("typescript");
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../../utils");
-/**
- * OpenAPI info docs
- */
 class OpenApiPathMethodInfo {
-    /**
-     * createModifiers
-     */
     static createModifiers() {
         return [typescript_1.factory.createModifier(typescript_1.SyntaxKind.ExportKeyword)];
     }
@@ -32,11 +26,6 @@ class OpenApiPathMethodInfo {
     description;
     operationId;
     parameters = [];
-    /**
-     * createDecorators
-     * @param url
-     * @param method
-     */
     createDecorators(url, method) {
         return [
             typescript_1.factory.createDecorator(typescript_1.factory.createCallExpression(typescript_1.factory.createIdentifier('ApiRequest'), undefined, [
@@ -49,17 +38,11 @@ class OpenApiPathMethodInfo {
         ];
     }
     importSource = new Map();
-    /**
-     * 初始化
-     */
     init() {
         const members = this.importSource.get('@geckoai/http') || new Set();
         members.add('ApiRequest');
         this.importSource.set('@geckoai/http', members);
     }
-    /**
-     * createImportDeclarations
-     */
     createImportDeclarations() {
         const list = [];
         this.importSource.forEach((members, source) => {
@@ -67,9 +50,6 @@ class OpenApiPathMethodInfo {
         });
         return list;
     }
-    /**
-     * getMembers
-     */
     getMembers() {
         const list = [];
         this.parameters.forEach((x) => {
@@ -89,14 +69,6 @@ class OpenApiPathMethodInfo {
         }
         return list;
     }
-    /**
-     * 创建文件
-     * @param url
-     * @param method
-     * @param name
-     * @param dest
-     * @param output
-     */
     async createFile(url, method, name, dest, output) {
         const fileName = path_1.default.join(dest, utils_1.Utils.getName(name) + '.ts');
         try {
@@ -106,9 +78,7 @@ class OpenApiPathMethodInfo {
             const sourceFile = typescript_1.factory.createSourceFile([
                 ...this.createImportDeclarations(),
                 utils_1.Utils.createNewLine(),
-                typescript_1.factory.createClassDeclaration(
-                // [],
-                this.createDecorators(url, method), OpenApiPathMethodInfo.createModifiers(), name, [], undefined, members),
+                typescript_1.factory.createClassDeclaration(this.createDecorators(url, method), OpenApiPathMethodInfo.createModifiers(), name, [], undefined, members),
             ], typescript_1.factory.createToken(typescript_1.SyntaxKind.EndOfFileToken), typescript_1.NodeFlags.None);
             const file = utils_1.Utils.printer.printNode(typescript_1.EmitHint.SourceFile, sourceFile, tsSourceFile);
             await utils_1.Utils.write(fileName, utils_1.Utils.unescape(file));

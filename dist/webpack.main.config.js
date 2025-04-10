@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainConfig = exports.config = void 0;
-// import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const webpack_merge_1 = require("webpack-merge");
@@ -53,7 +52,9 @@ exports.config = {
             : path_1.default.resolve('dist', 'main'),
     },
     externalsPresets: { node: true },
-    externals: [(0, webpack_node_externals_1.default)()],
+    externals: [
+        (0, webpack_node_externals_1.default)()
+    ],
     module: {
         rules: [
             {
@@ -71,33 +72,6 @@ exports.config = {
             },
         ],
     },
-    // plugins: [
-    //   new ForkTsCheckerWebpackPlugin({
-    //     typescript: {
-    //       configOverwrite: {
-    //         include: ['src/main'],
-    //       },
-    //       diagnosticOptions: {
-    //         syntactic: true,
-    //       },
-    //       mode: 'write-references',
-    //     },
-    //     async: !isProduction,
-    //     logger: {
-    //       infrastructure: 'silent',
-    //     },
-    //     issue: {
-    //       include: [
-    //         { file: '../**/src/main/**/*.ts' },
-    //         { file: '**/src/main/**/*.ts' },
-    //       ],
-    //       exclude: [
-    //         { file: '**/src/**/__tests__/**' },
-    //         { file: '**/src/**/?(*.){spec|test}.*' },
-    //       ],
-    //     },
-    //   }),
-    // ],
     resolve: {
         extensions: ['.ts', '.js', '.json', '.node'],
         alias: { ...alias },

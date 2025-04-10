@@ -1,25 +1,4 @@
 "use strict";
-/**
- * MIT License
- * Copyright (c) 2021 RanYunLong<549510622@qq.com> @geckoai/react-scripts
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -53,7 +32,6 @@ const fork_ts_checker_webpack_plugin_1 = __importDefault(require("fork-ts-checke
 const html_webpack_plugin_1 = __importDefault(require("html-webpack-plugin"));
 const mini_css_extract_plugin_1 = __importDefault(require("mini-css-extract-plugin"));
 const copy_webpack_plugin_1 = __importDefault(require("copy-webpack-plugin"));
-const stylelint_webpack_plugin_1 = __importDefault(require("stylelint-webpack-plugin"));
 const eslint_webpack_plugin_1 = __importDefault(require("eslint-webpack-plugin"));
 const css_minimizer_webpack_plugin_1 = __importDefault(require("css-minimizer-webpack-plugin"));
 const webpack_manifest_plugin_1 = require("webpack-manifest-plugin");
@@ -109,7 +87,6 @@ let babelLoaderOptions = {
     cacheDirectory: true,
     cacheCompression: false,
     exclude: [
-        // \\ for Windows, / for macOS and Linux
         /node_modules[\\/]core-js/,
         /node_modules[\\/]webpack[\\/]buildin/,
     ],
@@ -135,9 +112,6 @@ let postCssOptions = {
                 },
                 stage: 3,
             }),
-            // Adds PostCSS Normalize as the reset css with default options,
-            // so that it honors browserslist config in package.json
-            // which in turn let's users customize the target behavior as per their needs.
             (0, postcss_normalize_1.default)(),
         ],
         sourceMap: !isProduction,
@@ -147,18 +121,14 @@ const miniCssExtractPluginOptions = {
     publicPath: process.env.PUBLIC_URL,
 };
 let fileLoaderOptions = {};
-let stylelintOptions = {};
 let eslintOptions = {
     extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
+    exclude: ["node_modules"],
     cache: true,
     eslintPath: require.resolve('eslint'),
     cacheLocation: path_1.default.resolve('node_modules', '.cache/.eslintcache'),
     context: path_1.default.resolve('src'),
     cwd: path_1.default.resolve(),
-    resolvePluginsRelativeTo: __dirname,
-    baseConfig: {
-        extends: [require.resolve('eslint-config-react-app/base')],
-    },
 };
 let devServerOptions = {
     static: {
@@ -170,9 +140,6 @@ let devServerOptions = {
     },
     client: {
         webSocketURL: {
-            // Enable custom sockjs pathname for websocket connection to hot reloading server.
-            // Enable custom sockjs hostname, pathname and port for websocket connection
-            // to hot reloading server.
             hostname: sockHost,
             pathname: sockPath,
             port: sockPort,
@@ -217,7 +184,7 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
         babelLoaderOptions = Object.assign(babelLoaderOptions, renderer.babel);
     }
     if (renderer.style) {
-        const { sass, less, css, postcss, lint } = renderer.style;
+        const { sass, less, css, postcss } = renderer.style;
         if (css) {
             cssLoaderOptions = Object.assign(cssLoaderOptions, css);
         }
@@ -229,14 +196,6 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
         }
         if (postcss) {
             postCssOptions = Object.assign(postCssOptions, postcss);
-        }
-        if (lint) {
-            if (typeof lint !== 'boolean') {
-                stylelintOptions = Object.assign(stylelintOptions, lint);
-            }
-        }
-        else {
-            stylelintOptions = null;
         }
     }
     if (renderer.eslint) {
@@ -274,11 +233,6 @@ if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
         deployOptions = null;
     }
 }
-/**
- * 获取样式loaders
- * @param isModule
- * @param importLoaders
- */
 const getStyleLoaders = (isModule = false, importLoaders = 0) => {
     const cssLoader = {
         loader: 'css-loader',
@@ -472,7 +426,6 @@ const configuration = {
             ? 'browserslist'
             : 'web',
     resolve: {
-        // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.node'],
         alias: {
             ...alias,
@@ -531,7 +484,6 @@ const configuration = {
             },
         }),
         eslintOptions && new eslint_webpack_plugin_1.default(eslintOptions),
-        stylelintOptions && new stylelint_webpack_plugin_1.default(stylelintOptions),
         deployOptions && isProduction && new HtmlWebpackDeployPlugin(deployOptions),
         !isProduction &&
             new react_refresh_webpack_plugin_1.default({

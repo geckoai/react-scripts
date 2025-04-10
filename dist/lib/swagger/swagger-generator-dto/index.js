@@ -11,21 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SwaggerGeneratorDto = void 0;
 const class_transformer_1 = require("@geckoai/class-transformer");
-/**
- * @class SwaggerGeneratorDto
- */
 class SwaggerGeneratorDto {
-    /**
-     * 对应的path
-     */
     path;
-    /**
-     * 对应的method
-     */
     method;
-    /**
-     * 输出的名称
-     */
     name;
 }
 __decorate([

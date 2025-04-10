@@ -56,7 +56,10 @@ export const config: Configuration = {
         : path.resolve('dist', 'main'),
   },
   externalsPresets: { node: true },
-  externals: [externals()],
+  externals: [
+    // @ts-ignore
+    externals()
+  ],
   module: {
     rules: [
       {

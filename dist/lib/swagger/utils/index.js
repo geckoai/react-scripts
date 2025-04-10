@@ -32,21 +32,10 @@ const path_1 = __importDefault(require("path"));
 const inquirer_1 = __importDefault(require("inquirer"));
 const typescript_1 = __importStar(require("typescript"));
 const chalk_1 = __importDefault(require("chalk"));
-/**
- * 工具包
- */
 class Utils {
-    /**
-     * 创建一个空行
-     */
     static createNewLine() {
         return typescript_1.factory.createIdentifier('\n');
     }
-    /**
-     * unicode转汉字
-     * @param input
-     * @private
-     */
     static unescape(input) {
         const regexp = /\\u[\w\d]{4}/g;
         let str = input, exec = null;
@@ -58,11 +47,6 @@ class Utils {
         } while (exec);
         return str;
     }
-    /**
-     * 创建文件夹
-     * @param fileName
-     * @private
-     */
     static createDir(fileName) {
         let pathName = path_1.default.dirname(fileName);
         const dirs = [];
@@ -74,10 +58,6 @@ class Utils {
             fs_1.default.mkdirSync(o);
         });
     }
-    /**
-     * 获取文件名称
-     * @param n
-     */
     static getName(n) {
         return n
             .split('<')[0]
@@ -103,18 +83,10 @@ class Utils {
             .join('');
     }
     static overwrite = 1;
-    /**
-     * typescript printer
-     */
     static printer = (0, typescript_1.createPrinter)({
         removeComments: false,
         newLine: typescript_1.NewLineKind.LineFeed,
     });
-    /**
-     * 生成文件
-     * @param fileName
-     * @param file
-     */
     static async write(fileName, file) {
         try {
             const isExists = fs_1.default.existsSync(fileName);

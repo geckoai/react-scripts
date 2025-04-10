@@ -14,9 +14,6 @@ const class_transformer_1 = require("@geckoai/class-transformer");
 const open_api_info_1 = require("./open-api-info");
 const open_api_path_method_1 = require("./open-api-path-method");
 const open_api_definition_1 = require("./open-api-definition");
-/**
- * OpenAPI Docs
- */
 class OpenApi {
     swagger;
     openapi;

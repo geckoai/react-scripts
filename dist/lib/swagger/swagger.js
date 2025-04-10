@@ -18,15 +18,9 @@ const axios_1 = __importDefault(require("axios"));
 const utils_1 = require("../../utils");
 const open_api_1 = require("./open-api");
 const class_transformer_1 = require("@geckoai/class-transformer");
-/**
- * Swagger
- */
 class Swagger {
     url;
     outputs = [];
-    /**
-     * 加载配置文件
-     */
     async loadFile() {
         try {
             const res = await axios_1.default.get(this.url);

@@ -7,11 +7,6 @@ exports.install = void 0;
 const path_1 = __importDefault(require("path"));
 const chalk_1 = __importDefault(require("chalk"));
 const child_process_1 = require("child_process");
-/**
- * 安装依赖
- * @param type
- * @param projectName
- */
 function install(type, projectName) {
     return new Promise((r, j) => {
         const npmi = (0, child_process_1.spawn)(type + '.cmd', ['install'], {

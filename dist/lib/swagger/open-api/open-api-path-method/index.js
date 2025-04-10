@@ -12,9 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenApiPathMethod = void 0;
 const class_transformer_1 = require("@geckoai/class-transformer");
 const open_api_path_method_info_1 = require("../open-api-path-method-info");
-/**
- * OpenAPI info docs
- */
 class OpenApiPathMethod {
     get;
     post;

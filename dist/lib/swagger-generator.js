@@ -8,9 +8,6 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../utils");
 const swagger_1 = require("./swagger/swagger");
-/**
- * 编译swagger api文件
- */
 async function swaggerGenerator() {
     if (fs_1.default.existsSync(path_1.default.resolve('project.config.js'))) {
         const config = require(path_1.default.resolve('project.config.js'));

@@ -88,18 +88,17 @@
     "skipLibCheck": true,
     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,
-    /* Disallow inconsistently-cased references to the same file. */
-    "jsx": "react-jsx",
     "checkJs": false,
     "noStrictGenericChecks": true
   },
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
-    "dist",
-    "sample",
-    "apis",
-    "node_modules",
+    "dist/**",
+    "node_modules/**",
     "**/*.spec.ts",
     "test/**",
-    "template/"
-  ],
+    "template/**"
+  ]
 }

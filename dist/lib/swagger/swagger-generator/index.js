@@ -13,21 +13,9 @@ exports.SwaggerGenerator = void 0;
 const class_transformer_1 = require("@geckoai/class-transformer");
 const swagger_generator_dto_1 = require("../swagger-generator-dto");
 const swagger_generator_vo_1 = require("../swagger-generator-vo");
-/**
- * 输出信息
- */
 class SwaggerGenerator {
-    /**
-     * 生成文件存储的目录
-     */
     dest;
-    /**
-     * dtos
-     */
     dtos = [];
-    /**
-     * vos
-     */
     vos = [];
 }
 __decorate([

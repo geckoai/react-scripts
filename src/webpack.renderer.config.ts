@@ -30,9 +30,6 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import StylelintWebpackPlugin, {
-  Options as StylelintOpts,
-} from 'stylelint-webpack-plugin';
 import ESLintWebpackPlugin, {
   Options as EslintOpts,
 } from 'eslint-webpack-plugin';
@@ -135,18 +132,14 @@ const miniCssExtractPluginOptions = {
   publicPath: process.env.PUBLIC_URL,
 };
 let fileLoaderOptions = {};
-let stylelintOptions: StylelintOpts | null = {};
 let eslintOptions: EslintOpts | null = {
   extensions: ['js', 'mjs', 'jsx', 'ts', 'tsx'],
+  exclude: ["node_modules"],
   cache: true,
   eslintPath: require.resolve('eslint'),
   cacheLocation: path.resolve('node_modules', '.cache/.eslintcache'),
   context: path.resolve('src'),
   cwd: path.resolve(),
-  resolvePluginsRelativeTo: __dirname,
-  baseConfig: {
-    extends: [require.resolve('eslint-config-react-app/base')],
-  },
 };
 
 let devServerOptions: WebpackDevServer.Configuration = {
@@ -210,7 +203,7 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
   }
 
   if (renderer.style) {
-    const { sass, less, css, postcss, lint } = renderer.style;
+    const { sass, less, css, postcss } = renderer.style;
     if (css) {
       cssLoaderOptions = Object.assign(cssLoaderOptions, css);
     }
@@ -222,14 +215,6 @@ if (fs.existsSync(path.resolve('project.config.js'))) {
     }
     if (postcss) {
       postCssOptions = Object.assign(postCssOptions, postcss);
-    }
-
-    if (lint) {
-      if (typeof lint !== 'boolean') {
-        stylelintOptions = Object.assign(stylelintOptions, lint);
-      }
-    } else {
-      stylelintOptions = null;
     }
   }
 
@@ -532,7 +517,6 @@ const configuration: Configuration = {
       },
     }),
     eslintOptions && new ESLintWebpackPlugin(eslintOptions),
-    stylelintOptions && new StylelintWebpackPlugin(stylelintOptions),
     deployOptions && isProduction && new HtmlWebpackDeployPlugin(deployOptions),
     !isProduction &&
       new ReactRefreshPlugin({

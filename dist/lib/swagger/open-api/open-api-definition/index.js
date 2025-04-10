@@ -18,13 +18,7 @@ const open_api_definition_property_1 = require("../open-api-definition-property"
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("../../utils");
 const typescript_1 = require("typescript");
-/**
- * 输出信息
- */
 class OpenApiDefinition {
-    /**
-     * createModifiers
-     */
     static createModifiers() {
         return [typescript_1.factory.createModifier(typescript_1.SyntaxKind.ExportKeyword)];
     }
@@ -32,9 +26,6 @@ class OpenApiDefinition {
     title;
     properties = new Map();
     importSource = new Map();
-    /**
-     * createImportDeclarations
-     */
     createImportDeclarations() {
         const list = [];
         this.importSource.forEach((members, source) => {
@@ -42,9 +33,6 @@ class OpenApiDefinition {
         });
         return list;
     }
-    /**
-     * getMembers
-     */
     getMembers(output) {
         const list = [];
         this.properties.forEach((x, name) => {
@@ -55,12 +43,6 @@ class OpenApiDefinition {
         });
         return list;
     }
-    /**
-     * 创建文件
-     * @param name
-     * @param dest
-     * @param output
-     */
     async createFile(name, dest, output) {
         const fileName = path_1.default.join(dest, utils_1.Utils.getName(name) + '.ts');
         const tsSourceFile = (0, typescript_1.createSourceFile)(fileName, '', typescript_1.ScriptTarget.Latest);
