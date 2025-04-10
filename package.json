@@ -71,7 +71,7 @@
     "dotenv-webpack": "8.1.0",
     "giget": "1.2.3",
     "validate-npm-package-name": "5.0.1",
-    "eslint": "9.16.0",
+    "eslint": "9.24.0",
     "@eslint/css": "0.6.0",
     "@eslint/js": "9.24.0",
     "@eslint/json": "0.11.0",
