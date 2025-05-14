@@ -106,7 +106,7 @@ program
                 console.warn(x);
             });
         }
-        await (0, giget_1.downloadTemplate)('github:geckoai/electron-react-app-template', {
+        await (0, giget_1.downloadTemplate)('github:geckoai/electron-react-app-template#gecko', {
             dir: path_1.default.resolve(projectName)
         });
         spinner.succeed('Download template success!');
