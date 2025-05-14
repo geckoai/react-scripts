@@ -1,11 +1,11 @@
 {
-  "name": "@geckoai/electron-react-scripts",
-  "version": "1.0.21",
-  "description": "electron-react-scripts",
+  "name": "@geckoai/gecko-cli",
+  "version": "1.0.0",
+  "description": "gecko-cli",
   "main": "dist",
   "types": "dist/types",
   "bin": {
-    "electron-react-scripts": "./dist/bin/index.js"
+    "gecko": "./dist/bin/index.js"
   },
   "scripts": {
     "build:clean": "rimraf dist && rimraf docs",
@@ -13,19 +13,18 @@
     "build:types": "tsc --project tsconfig.prod.types.json",
     "build:docs": "typedoc --options ./typedoc.json",
     "release": "pnpm run build:cjs",
-    "bin:build": "ts-node ./src/bin/index.ts build",
-    "bin:generator": "ts-node ./src/bin/index.ts swagger-generator"
+    "bin:build": "ts-node ./src/bin/index.ts build"
   },
   "keywords": [
-    "@geckoai/electron-react-scripts",
+    "@geckoai/gecko-cli",
     "geckoai-electron",
-    "electron-react-scripts"
+    "gecko-cli"
   ],
   "author": "YunlongRan<549510622@qq.com>",
   "bugs": {
-    "url": "https://github.com/@geckoai/electron-react-scripts/issues"
+    "url": "https://github.com/geckoai/gecko-cli/issues"
   },
-  "homepage": "https://github.com/@geckoai/electron-react-scriptsr#readme",
+  "homepage": "https://github.com/geckoai/gecko-clir#readme",
   "license": "MIT",
   "devDependencies": {
     "@geckoai/http": "^2.0.0",
@@ -52,11 +51,9 @@
   },
   "dependencies": {
     "webpack-node-externals": "3.0.0",
-    "@babel/runtime-corejs2": "^7.18.9",
-    "@geckoai/class-transformer": "1.0.1",
+    "@babel/runtime-corejs2": "^7.27.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.15",
     "autoprefixer": "10.4.4",
-    "axios": "0.27.2",
     "babel-loader": "8.2.4",
     "babel-plugin-named-asset-import": "0.3.8",
     "babel-plugin-transform-typescript-metadata": "0.3.2",
@@ -85,7 +82,6 @@
     "inquirer": "8.2.2",
     "ip": "1.1.5",
     "mini-css-extract-plugin": "2.6.0",
-    "moment": "2.30.1",
     "ora": "4.1.1",
     "postcss": "8.4.39",
     "postcss-flexbugs-fixes": "5.0.2",
@@ -100,10 +96,10 @@
     "terser-webpack-plugin": "5.3.1",
     "thread-loader": "4.0.2",
     "ts-loader": "9.3.0",
-    "typescript": "4.6.4",
+    "typescript": "5.8.3",
     "url": "0.11.0",
     "url-loader": "4.1.1",
-    "webpack": "5.76.3",
+    "webpack": "5.99.8",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-dev-server": "4.15.1",
     "webpack-manifest-plugin": "4.0.2",

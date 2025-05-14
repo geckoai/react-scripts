@@ -88,8 +88,7 @@
     "skipLibCheck": true,
     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,
-    "checkJs": false,
-    "noStrictGenericChecks": true
+    "checkJs": false
   },
   "include": [
     "src/**/*"

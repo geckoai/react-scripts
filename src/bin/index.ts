@@ -32,7 +32,6 @@ import { downloadTemplate } from 'giget';
 import { build } from '../lib/build';
 import { setEnv } from '../lib/set-env';
 import { install } from '../lib/install';
-import { swaggerGenerator } from '../lib/swagger-generator';
 import dotenv from '@dotenvx/dotenvx';
 import { expand } from 'dotenv-expand';
 import fs from 'fs';
@@ -53,7 +52,7 @@ program
     expand(
       dotenv.config({
         path: ['.env.local', '.env.development', '.env'],
-        processEnv: { ...process.env } as any,
+        processEnv: { ...process.env } as any
       })
     );
     setEnv();
@@ -77,26 +76,12 @@ program
       'node',
       [
         `--max_old_space_size=${process.env.MAX_OLD_SPACE_SIZE}`,
-        path.join(__dirname, '../', 'lib', 'start.js'),
+        path.join(__dirname, '../', 'lib', 'start.js')
       ],
       {
-        stdio: 'inherit',
+        stdio: 'inherit'
       }
     );
-  });
-
-program
-  .command('swagger-generator')
-  .description('Build swagger docs')
-  .action(async () => {
-    expand(
-      dotenv.config({
-        path: ['.env.local', '.env.development', '.env'],
-        processEnv: { ...process.env } as any,
-      })
-    );
-    setEnv();
-    await swaggerGenerator();
   });
 
 program
@@ -106,7 +91,7 @@ program
     process.env.NODE_ENV = 'production';
     expand(
       dotenv.config({
-        path: ['.env.local', '.env.production', '.env'],
+        path: ['.env.local', '.env.production', '.env']
       })
     );
     setEnv();
@@ -127,7 +112,7 @@ program
       }
 
       await downloadTemplate('github:geckoai/electron-react-app-template', {
-        dir: path.resolve(projectName),
+        dir: path.resolve(projectName)
       });
       spinner.succeed('Download template success!');
 
@@ -143,7 +128,7 @@ program
         type: 'input',
         name: 'description',
         message: 'Please enter project description!',
-        default: '',
+        default: ''
       });
       json.name = description;
 
@@ -151,7 +136,7 @@ program
         type: 'input',
         name: 'author',
         message: 'Please enter project author!',
-        default: 'mingqi-tech',
+        default: 'mingqi-tech'
       });
       json.author = author;
 
@@ -159,7 +144,7 @@ program
         type: 'input',
         name: 'productName',
         message: 'Please enter project productName!',
-        default: 'App Name',
+        default: 'App Name'
       });
       json.build.productName = productName;
 
@@ -167,7 +152,7 @@ program
         type: 'input',
         name: 'appId',
         message: 'Please enter project appId!',
-        default: 'com.mininglamp.electron.app',
+        default: 'com.mininglamp.electron.app'
       });
       json.build.appId = appId;
 
@@ -175,7 +160,7 @@ program
         type: 'input',
         name: 'copyright',
         message: 'Please enter project copyright!',
-        default: 'Copyright © 2020 mininglamp',
+        default: 'Copyright © 2020 mininglamp'
       });
       json.build.copyright = copyright;
 
@@ -188,7 +173,7 @@ program
         type: 'confirm',
         name: 'isInstall',
         message: 'Is install dependencies ?',
-        default: true,
+        default: true
       });
 
       if (isInstall) {

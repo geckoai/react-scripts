@@ -3,27 +3,27 @@
 ### install
 
 ```shell
-npm i @geckoai/electron-react-scripts
+npm i @geckoai/gecko-cli
 # or
-yarn add @geckoai/electron-react-scripts
+yarn add @geckoai/gecko-cli
 ```
 
 ### create app
 
-1. Global install the package `@geckoai/electron-react-scripts`;
+1. Global install the package `@geckoai/gecko-cli`;
 
 ```shell
 # mac/ubuntu
-sudo npm i -g @geckoai/electron-react-scripts
+sudo npm i -g @geckoai/gecko-cli
 # windows
-npm i -g @geckoai/electron-react-scripts
+npm i -g @geckoai/gecko-cli
 ```
 
 2. Create a app
 
 ```shell
 # input your app-name
-electron-react-scripts create app-name
+gecko create app-name
 
 # in your app-name
 cd app-name
