@@ -1,6 +1,6 @@
 {
   "name": "@geckoai/gecko-cli",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "gecko-cli",
   "main": "dist",
   "types": "dist/types",
